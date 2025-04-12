@@ -1,42 +1,41 @@
 
 #include <gtest/gtest.h>
 
-#include <stack>
 
 #include "stack.hpp"
 
 TEST(StackTest, Simple) {
-  Stack stack;
-  stack.Push(1);              // Stack [1]
-  ASSERT_EQ(stack.Pop(), 1);  // Stack []
-  stack.Push(1);              // Stack [1]
-  stack.Push(2);              // Stack [1, 2]
-  ASSERT_EQ(stack.Pop(), 2);  // Stack [1]
-  ASSERT_EQ(stack.Pop(), 1);  // Stack []
-  stack.Push(1);              // Stack [1]
-  stack.Push(2);              // Stack [1, 2]
-  ASSERT_EQ(stack.Pop(), 2);  // Stack [1]
-  stack.Push(3);              // Stack [1, 3]
-  ASSERT_EQ(stack.Pop(), 3);  // Stack [1]
-  ASSERT_EQ(stack.Pop(), 1);  // Stack []
+  Stack<int> stack;
+  stack.push_element(1);              // Stack [1]
+  ASSERT_EQ(stack.pop_element(), 1);  // Stack []
+  stack.push_element(1);              // Stack [1]
+  stack.push_element(2);              // Stack [1, 2]
+  ASSERT_EQ(stack.pop_element(), 2);  // Stack [1]
+  ASSERT_EQ(stack.pop_element(), 1);  // Stack []
+  stack.push_element(1);              // Stack [1]
+  stack.push_element(2);              // Stack [1, 2]
+  ASSERT_EQ(stack.pop_element(), 2);  // Stack [1]
+  stack.push_element(3);              // Stack [1, 3]
+  ASSERT_EQ(stack.pop_element(), 3);  // Stack [1]
+  ASSERT_EQ(stack.pop_element(), 1);  // Stack []
 }
 
 TEST(MinStackTest, Simple) {
-  MinStack stack;
-  stack.Push(1);  // Stack [1]
-  ASSERT_EQ(stack.GetMin(), 1);
-  ASSERT_EQ(stack.Pop(), 1);  // Stack []
-  stack.Push(1);              // Stack [1]
-  stack.Push(2);              // Stack [1, 2]
-  ASSERT_EQ(stack.GetMin(), 1);
-  ASSERT_EQ(stack.Pop(), 2);  // Stack [1]
-  ASSERT_EQ(stack.Pop(), 1);  // Stack []
-  stack.Push(1);              // Stack [1]
-  stack.Push(2);              // Stack [1, 2]
-  ASSERT_EQ(stack.GetMin(), 1);
-  ASSERT_EQ(stack.Pop(), 2);  // Stack [1]
-  stack.Push(3);              // Stack [1, 3]
-  ASSERT_EQ(stack.GetMin(), 1);
-  ASSERT_EQ(stack.Pop(), 3);  // Stack [1]
-  ASSERT_EQ(stack.Pop(), 1);  // Stack []
+  MinStack<int> stack;
+  stack.push_element(1);  // Stack [1]
+  ASSERT_EQ(stack.get_min(), 1);
+  ASSERT_EQ(stack.pop_element(), 1);  // Stack []
+  stack.push_element(1);              // Stack [1]
+  stack.push_element(2);              // Stack [1, 2]
+  ASSERT_EQ(stack.get_min(), 1);
+  ASSERT_EQ(stack.pop_element(), 2);  // Stack [1]
+  ASSERT_EQ(stack.pop_element(), 1);  // Stack []
+  stack.push_element(1);              // Stack [1]
+  stack.push_element(2);              // Stack [1, 2]
+  ASSERT_EQ(stack.get_min(), 1);
+  ASSERT_EQ(stack.pop_element(), 2);  // Stack [1]
+  stack.push_element(3);              // Stack [1, 3]
+  ASSERT_EQ(stack.get_min(), 1);
+  ASSERT_EQ(stack.pop_element(), 3);  // Stack [1]
+  ASSERT_EQ(stack.pop_element(), 1);  // Stack []
 }

@@ -1,3 +1,7 @@
-#include <iostream>
+// #include <iostream>
+// #include <stack>
+// #include <vector>
 
-int main() { return 0; }
+#include "days_before_hot.hpp"
+
+int main() {}

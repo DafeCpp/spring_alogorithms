@@ -1,4 +1,6 @@
-#include "util.hpp"
+#include <algorithm>
+
+#include "sorting.hpp"
 
 void MergeSort(std::vector<int>& array) {
   int n = array.size();

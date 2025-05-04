@@ -15,6 +15,7 @@ jobs:
     steps:
       - name: Install gtest manually
         run: sudo apt-get install libgtest-dev
+        run: sudo apt install libomp-dev
 
       - uses: actions/checkout@v3
 

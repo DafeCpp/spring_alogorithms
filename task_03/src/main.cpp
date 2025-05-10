@@ -1,3 +1,4 @@
-#include <iostream>
 
-int main() { return 0; }
+#include "days_before_hot.hpp"
+
+int main() {}

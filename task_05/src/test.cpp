@@ -6,10 +6,10 @@
 #include "QuickSort.hpp"
 
 namespace {
-  bool isSorted(const std::vector<int>& arr) {
-    return std::is_sorted(arr.begin(), arr.end());
-  }
+bool isSorted(const std::vector<int>& arr) {
+  return std::is_sorted(arr.begin(), arr.end());
 }
+}  // namespace
 
 TEST(QuickSortTest, AlreadySorted) {
   std::vector<int> arr = {1, 2, 3, 4, 5};

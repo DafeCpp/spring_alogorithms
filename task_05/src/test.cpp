@@ -5,8 +5,10 @@
 
 #include "QuickSort.hpp"
 
-bool isSorted(const std::vector<int>& arr) {
-  return std::is_sorted(arr.begin(), arr.end());
+namespace {
+  bool isSorted(const std::vector<int>& arr) {
+    return std::is_sorted(arr.begin(), arr.end());
+  }
 }
 
 TEST(QuickSortTest, AlreadySorted) {

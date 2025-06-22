@@ -84,7 +84,10 @@ class HashTable {
       for (const auto& entry : table[i]) {
         std::cout << "(" << entry.first << ": " << entry.second << ") ";
       }
-      std::cout << std::endl;
+      std::cout << "\n";
     }
   }
+
+  int Size() { return size; }
+  bool IsEmpty() { return table.empty(); }
 };

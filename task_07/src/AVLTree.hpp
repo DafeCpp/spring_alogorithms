@@ -2,16 +2,20 @@
 
 #include <iostream>
 
-struct Node {
-  int key;
-  Node* left;
-  Node* right;
-  int height;
-  Node(int k) : key(k), left(nullptr), right(nullptr), height(1) {}
-};
-
 class AVLTree {
  private:
+  struct Node {
+    int key;
+    Node* left{nullptr};
+    Node* right{nullptr};
+    int height;
+    Node(int k) : key(k), left(nullptr), right(nullptr), height(1) {}
+    ~Node() {
+      delete left;
+      delete right;
+    }
+  };
+
   Node* root = nullptr;
 
   int height(Node* n) { return n ? n->height : 0; }

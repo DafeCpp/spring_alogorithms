@@ -1,7 +1,12 @@
-#include "topology_sort.hpp"
+#include "days_untill_warmer.hpp"
 
-std::vector<int> days_until_warmer(const std::vector<int>& temperatures) {
+#include <stdexcept>
+
+std::vector<int> DaysUntilWarmer(const std::vector<int>& temperatures) {
   int n = temperatures.size();
+  if (n == 0) {
+    throw std::runtime_error("Empty array");
+  }
   std::vector<int> result(n, 0);
   std::stack<int> st;
 

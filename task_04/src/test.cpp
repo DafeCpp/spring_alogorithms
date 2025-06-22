@@ -5,25 +5,29 @@
 
 #include "buy_fish.hpp"
 
-int totalFishBought(const std::vector<int>& purchases) {
-  int total = 0;
-  for (int p : purchases) total += p;
-  return total;
-}
+namespace {
 
-bool isValidSchedule(const std::vector<int>& purchases, int k) {
-  int n = purchases.size();
-  std::vector<int> stock(n + k, 0);
-  for (int i = 0; i < n; ++i) {
-    for (int j = i; j < std::min(i + k, n); ++j) {
-      stock[j] += purchases[i];
+  int totalFishBought(const std::vector<int>& purchases) {
+    int total = 0;
+    for (int p : purchases) total += p;
+    return total;
+  }
+
+  bool isValidSchedule(const std::vector<int>& purchases, int k) {
+    int n = purchases.size();
+    std::vector<int> stock(n + k, 0);
+    for (int i = 0; i < n; ++i) {
+      for (int j = i; j < std::min(i + k, n); ++j) {
+        stock[j] += purchases[i];
+      }
     }
+    for (int i = 0; i < n; ++i) {
+      if (stock[i] == 0) return false;
+      stock[i]--;
+    }
+    return true;
   }
-  for (int i = 0; i < n; ++i) {
-    if (stock[i] == 0) return false;
-    stock[i]--;
-  }
-  return true;
+
 }
 
 TEST(BuyFishTest, SimpleIncreasingPrices) {

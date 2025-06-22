@@ -1,9 +1,8 @@
 #include "task_01.hpp"
 
-std::vector<int> find_two_nums(int target, std::vector<int> arr) {
+std::vector<int> FindTwoNums(int target, const std::vector<int>& arr) {
   int left = 0;
   int right = arr.size() - 1;
-  int sum = arr[right] + arr[left];
   while (left < right) {
     int sum = arr[left] + arr[right];
     if (sum == target) {

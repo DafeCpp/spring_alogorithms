@@ -1,5 +1,6 @@
 #include "QuickSort.hpp"
 
+namespace {
 void quickSortwrap(std::vector<int>& arr, int low, int high) {
   if (low < high) {
     int pivot = arr[high];
@@ -18,6 +19,7 @@ void quickSortwrap(std::vector<int>& arr, int low, int high) {
     quickSortwrap(arr, pi + 1, high);
   }
 };
+}  // namespace
 
 void quickSort(std::vector<int>& arr) {
   if (!arr.empty()) {

@@ -5,9 +5,9 @@ int ordstat(std::vector<int>& arr, int k) {
   int right = arr.size() - 1;
 
   while (left <= right) {
-    int pivotIndex = left + rand() % (right - left + 1);
-    int pivotValue = arr[pivotIndex];
-    std::swap(arr[pivotIndex], arr[right]);
+    int pivot_index = left + rand() % (right - left + 1);
+    int pivotValue = arr[pivot_index];
+    std::swap(arr[pivot_index], arr[right]);
 
     int storeIndex = left;
     for (int i = left; i < right; i++) {

@@ -41,7 +41,7 @@ TEST(MinStackTest, Simple) {
   ASSERT_EQ(stack.Pop(), 1);  // Stack []
 }
 
-// // ------------------------- Stack ----------------------------
+// ------------------------- Stack ----------------------------
 
 TEST(StackTest, BasicPushPop) {
   Stack<int> s;

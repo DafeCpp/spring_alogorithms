@@ -14,6 +14,9 @@ class Stack {
   }
   void Push(T value) { data_.push_back(value); }
   T Pop() {
+    if (data_.empty()) {
+      throw std::runtime_error("Stack is empty.");
+    }
     T result = data_.back();
     data_.pop_back();
     return result;
@@ -45,6 +48,9 @@ class MinStack {
     }
   }
   T Pop() {
+    if (data_.empty()) {
+      throw std::runtime_error("Stack is empty.");
+    }
     T result = data_.back();
     data_.pop_back();
     data_mins_.pop_back();
@@ -85,6 +91,9 @@ class MaxStack {
     }
   }
   T Pop() {
+    if (data_.empty()) {
+      throw std::runtime_error("Stack is empty.");
+    }
     T result = data_.back();
     data_.pop_back();
     data_maxs.pop_back();

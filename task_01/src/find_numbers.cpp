@@ -1,18 +1,17 @@
-#include <vector>
-#include <stdexcept>
+#include "find_numbers.hpp"
 
-std::vector<int> FindNumberOfSumma(std::vector<int> vec, int summa) {
+std::vector<int> FindNumberOfamount(std::vector<int> vec, int summa) {
   if (vec.empty()) {
     throw std::runtime_error("Vector is empty");
   }
   int start_iterator{0};
   int end_iterator{vec.size() - 1};
-  std::vector<int> return_vector;
+  std::vector<int> result;
   while (true) {
     if (vec[start_iterator] + vec[end_iterator] == summa) {
-      return_vector.push_back(vec[start_iterator]);
-      return_vector.push_back(vec[end_iterator]);
-      return return_vector;
+      result.push_back(vec[start_iterator]);
+      result.push_back(vec[end_iterator]);
+      return result;
     }
     if (vec[start_iterator] + vec[end_iterator] < summa) {
       start_iterator++;
@@ -21,7 +20,7 @@ std::vector<int> FindNumberOfSumma(std::vector<int> vec, int summa) {
       end_iterator--;
     }
     if (start_iterator == end_iterator) {
-      throw std::runtime_error("Summa not found");
+      throw std::runtime_error("Sum not found");
     }
   }
 }

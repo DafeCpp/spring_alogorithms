@@ -1,30 +1,30 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-#include "task1.hpp"
+#include "find_numbers.hpp"
 
-TEST(FindNumberOfSummaTest, SimpleCase) {
+TEST(FindNumberOfamountTest, SimpleCase) {
     std::vector<int> vec = {1, 2, 3, 4, 5};
     int summa = 8;
     std::vector<int> expected = {3, 5};
-    ASSERT_EQ(FindNumberOfSumma(vec, summa), expected);
+    ASSERT_EQ(FindNumberOfamount(vec, summa), expected);
 }
 
-TEST(FindNumberOfSummaTest, FirstAndLastElements) {
+TEST(FindNumberOfamountTest, FirstAndLastElements) {
     std::vector<int> vec = {1, 2, 3, 4, 5};
     int summa = 6;
     std::vector<int> expected = {1, 5};
-    ASSERT_EQ(FindNumberOfSumma(vec, summa), expected);
+    ASSERT_EQ(FindNumberOfamount(vec, summa), expected);
 }
 
-TEST(FindNumberOfSummaTest, NoPairFound) {
+TEST(FindNumberOfamountTest, NoPairFound) {
     std::vector<int> vec = {1, 2, 3, 4, 5};
     int summa = 10;
-    EXPECT_THROW(FindNumberOfSumma(vec, summa), std::runtime_error);
+    EXPECT_THROW(FindNumberOfamount(vec, summa), std::runtime_error);
 }
 
-TEST(FindNumberOfSummaTest, EmptyVector) {
+TEST(FindNumberOfamountTest, EmptyVector) {
     std::vector<int> vec;
     int summa = 5;
-    EXPECT_THROW(FindNumberOfSumma(vec, summa), std::runtime_error);
+    EXPECT_THROW(FindNumberOfamount(vec, summa), std::runtime_error);
 }

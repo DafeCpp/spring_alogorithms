@@ -1,9 +1,9 @@
-#include "topology_sort.hpp"
+#include "find_days_to_warm.hpp"
 
-#include <stack>
-#include <vector>
 #include <algorithm>
+#include <stack>
 #include <utility>
+#include <vector>
 
 std::vector<int> DaysToWarming(std::vector<int> temperature_list) {
   if (temperature_list.size() == 0) {
@@ -22,7 +22,7 @@ std::vector<int> DaysToWarming(std::vector<int> temperature_list) {
            temperature_list[i] >= decreasing_stack.top().first) {
       decreasing_stack.pop();
     }
-    if (decreasing_stack.size() == 0) {
+    if (decreasing_stack.empty()) {
       days_to_warming.push_back(0);
       decreasing_stack.push(std::pair<int, int>(temperature_list[i], i));
     } else {

@@ -1,15 +1,16 @@
-#ifndef STACK_H
-#define STACK_H
+#ifndef STACK_HPP
+#define STACK_HPP
 
 #include <stdexcept>
 #include <vector>
 
+template <typename T>
 class Stack {
  private:
-  std::vector<int> data;
+  std::vector<T> data;
 
  public:
-  void Push(int value) { data.push_back(value); }
+  void Push(T value) { data.push_back(value); }
 
   void Pop() {
     if (IsEmpty()) {
@@ -18,7 +19,7 @@ class Stack {
     data.pop_back();
   }
 
-  int Top() {
+  T Top() {
     if (IsEmpty()) {
       throw std::runtime_error("Stack is empty");
     }
@@ -28,14 +29,14 @@ class Stack {
   bool IsEmpty() { return data.empty(); }
 };
 
-
+template <typename T>
 class MinStack {
  private:
-  std::vector<int> stack;
-  std::vector<int> minStack;
+  std::vector<T> stack;
+  std::vector<T> minStack;
 
  public:
-  void Push(int value) {
+  void Push(T value) {
     stack.push_back(value);
     if (minStack.empty() || value <= minStack.back()) {
       minStack.push_back(value);
@@ -52,21 +53,21 @@ class MinStack {
     stack.pop_back();
   }
 
-  int Top() {
+  T Top() {
     if (stack.empty()) {
       throw std::runtime_error("Stack is empty");
     }
     return stack.back();
   }
 
-  int FindMin() {
+  T FindMin() {
     if (minStack.empty()) {
       throw std::runtime_error("Stack is empty");
     }
     return minStack.back();
   }
 
-  bool isEmpty() { return stack.empty(); }
+  bool IsEmpty() { return stack.empty(); }
 };
 
-#endif  // STACK_H
+#endif  // STACK_HPP

@@ -91,7 +91,7 @@ void Heap<T>::SiftDown() {
 }
 
 template <typename T>
-std::vector<T> Heap_sort(std::vector<T> list) {
+std::vector<T> HeapSort(std::vector<T> list) {
   std::vector<T> return_vector;
   Heap<T> heap = Heap(list);
   while (return_vector.size() != list.size()) {

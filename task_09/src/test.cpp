@@ -1,23 +1,18 @@
 #include <gtest/gtest.h>
-
+#include "task9.hpp"
 #include <vector>
 
-TEST(CanReachNonDecreasingSegment, 1) {
-  // ASSERT_EQ(SolveFunction(5, 4, 6,
-  //                         std::vector<std::vector<int>>{{1, 2, 3, 5},
-  //                                                       {3, 1, 3, 2},
-  //                                                       {4, 5, 2, 3},
-  //                                                       {5, 5, 3, 2},
-  //                                                       {4, 4, 3, 4}},
-  //                         std::vector<std::pair<int, int>>{
-  //                             {1, 1}, {2, 5}, {4, 5}, {3, 5}, {1, 3}, {1,
-  //                             5}}),
-  //           (std::vector<std::string>{"Yes", "No", "Yes", "Yes", "Yes",
-  //           "No"}));
-}
-
-TEST(CanReachNonDecreasingSegment, 2) {
-  // ASSERT_EQ(SolveFunction(1, 1, 1, std::vector<std::vector<int>>{{1, 1}},
-  //                         std::vector<std::pair<int, int>>{{1, 1}}),
-  //           (std::vector<std::string>{"Yes"}));
+TEST(TableSortTest, AllColumnsAscending) {
+    std::vector<std::vector<int>> table = {
+        {1, 10, 100},
+        {2, 20, 200},
+        {3, 30, 300},
+        {4, 40, 400}
+    };
+    
+    auto reach = PreprocessMaxReach(table);
+    
+    EXPECT_TRUE(CheckRangeSorted(reach, 0, 3));  // Весь диапазон
+    EXPECT_TRUE(CheckRangeSorted(reach, 1, 2));  // Часть диапазона
+    EXPECT_TRUE(CheckRangeSorted(reach, 0, 0));  // Одна строка
 }

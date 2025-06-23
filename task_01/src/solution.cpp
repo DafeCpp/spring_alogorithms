@@ -8,11 +8,11 @@
 int BinarySearchGEQ(const std::vector<int>& arr, int target, int left,
                     int right) {
   while (left < right) {
-    int mid = left + (right - left + 1) / 2;
-    if (arr[mid] > target) {
-      right = mid - 1;
+    int mid = left + (right - left) / 2;
+    if (arr[mid] < target) {
+      left = mid + 1;
     } else {
-      left = mid;
+      right = mid;
     }
   }
   return left;
@@ -31,10 +31,10 @@ std::pair<int, int> FindPairMatchSum(const std::vector<int>& arr, int target) {
   unsigned int left = 0;
   unsigned int right =
       BinarySearchGEQ(arr, target - arr[left], 0, arr.size() - 1);
-  while (left < arr.size() - 1 && arr[left] + arr[left + 1] < target) {
+  while (left < arr.size() - 1 && arr[left] + arr[left + 1] <= target) {
     if (arr[left] + arr[right] == target) return {arr[left], arr[right]};
     left += 1;
     right = BinarySearchGEQ(arr, target - arr[left], left, right);
   }
-  throw std::runtime_error("Failed to find sutable pair");
+  throw std::runtime_error("Failed to find suiable pair");
 }

@@ -5,19 +5,25 @@
 
 class Stack {
  public:
+  Stack(unsigned int reserve = 0);
   void Push(int value);
   int Pop();
+  // some handy extensions
+  int GetTop();  // sometimes called Peek but GetTop is more self-describing
+  bool IsEmpy();
 
  private:
-  std::stack<int> data_;
+  std::vector<int> data_;
 };
 
 class MinStack {
  public:
+  MinStack(unsigned int reserve = 0);
   void Push(int value);
   int Pop();
   int GetMin();
 
  private:
-  std::vector<int> data_;
+  Stack data_;
+  Stack min_;
 };

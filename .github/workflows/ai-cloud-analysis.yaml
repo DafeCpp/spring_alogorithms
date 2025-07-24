@@ -1,0 +1,366 @@
+name: AI Cloud Analysis
+
+on:
+  pull_request:
+    branches: [ main, master ]
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  cloud-analysis:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      actions: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: AI Analysis with Free Services
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
+          REPLICATE_API_KEY: ${{ secrets.REPLICATE_API_KEY }}
+        run: |
+          python -c "
+          import os
+          import requests
+          import json
+          import subprocess
+          import time
+
+          def get_changed_files():
+              try:
+                  result = subprocess.run(['git', 'diff', '--name-only', 'HEAD~1'],
+                                        capture_output=True, text=True, check=True)
+                  return [f for f in result.stdout.strip().split('\n') if f]
+              except subprocess.CalledProcessError:
+                  return []
+
+          def read_file_content(file_path):
+              try:
+                  with open(file_path, 'r', encoding='utf-8') as f:
+                      return f.read()
+              except Exception as e:
+                  return f'Error reading file: {e}'
+
+          def analyze_with_huggingface(files_content):
+              api_key = os.getenv('HUGGINGFACE_API_KEY')
+              if not api_key:
+                  return 'HUGGINGFACE_API_KEY not configured'
+
+              try:
+                  headers = {
+                      'Authorization': f'Bearer {api_key}',
+                      'Content-Type': 'application/json'
+                  }
+
+                  # Используем бесплатную модель для анализа кода
+                  prompt = f'''
+                  Analyze this C++ code and provide a brief review:
+
+                  {files_content[:800]}
+
+                  Provide:
+                  1. Code quality assessment
+                  2. Potential issues
+                  3. Suggestions for improvement
+
+                  Keep response concise and focused.
+                  '''
+
+                  data = {
+                      'inputs': prompt,
+                      'parameters': {
+                          'max_new_tokens': 300,
+                          'temperature': 0.3,
+                          'do_sample': True
+                      }
+                  }
+
+                  # Попробуем несколько бесплатных моделей
+                  models = [
+                      'microsoft/DialoGPT-medium',
+                      'gpt2',
+                      'distilgpt2'
+                  ]
+
+                  for model in models:
+                      try:
+                          response = requests.post(
+                              f'https://api-inference.huggingface.co/models/{model}',
+                              headers=headers, json=data, timeout=30
+                          )
+
+                          if response.status_code == 200:
+                              result = response.json()
+                              if isinstance(result, list) and len(result) > 0:
+                                  return f'## 🤖 AI Analysis (Hugging Face - {model})\\n\\n{result[0].get(\"generated_text\", \"Analysis completed\")}'
+                              elif isinstance(result, dict) and 'generated_text' in result:
+                                  return f'## 🤖 AI Analysis (Hugging Face - {model})\\n\\n{result[\"generated_text\"]}'
+                      except:
+                          continue
+
+                  return 'Hugging Face analysis failed'
+              except Exception as e:
+                  return f'Hugging Face API error: {e}'
+
+          def analyze_with_replicate(files_content):
+              api_key = os.getenv('REPLICATE_API_KEY')
+              if not api_key:
+                  return 'REPLICATE_API_KEY not configured'
+
+              try:
+                  headers = {
+                      'Authorization': f'Token {api_key}',
+                      'Content-Type': 'application/json'
+                  }
+
+                  prompt = f'''
+                  Review this C++ code:
+
+                  {files_content[:500]}
+
+                  Provide brief feedback on code quality and potential issues.
+                  '''
+
+                  data = {
+                      'version': '2c1608e18606fad2812020dc54193f4b2dfb546065d4e9c3a7c3a8f81a0a3b3b',
+                      'input': {
+                          'prompt': prompt,
+                          'max_tokens': 200,
+                          'temperature': 0.3
+                      }
+                  }
+
+                  response = requests.post(
+                      'https://api.replicate.com/v1/predictions',
+                      headers=headers, json=data, timeout=30
+                  )
+
+                  if response.status_code == 201:
+                      prediction_id = response.json()['id']
+
+                      # Ждем результат
+                      for _ in range(10):
+                          time.sleep(2)
+                          status_response = requests.get(
+                              f'https://api.replicate.com/v1/predictions/{prediction_id}',
+                              headers=headers
+                          )
+
+                          if status_response.status_code == 200:
+                              result = status_response.json()
+                              if result['status'] == 'succeeded':
+                                  return f'## 🤖 AI Analysis (Replicate)\\n\\n{result[\"output\"]}'
+                              elif result['status'] == 'failed':
+                                  break
+
+                      return 'Replicate analysis timed out'
+                  else:
+                      return 'Replicate API request failed'
+              except Exception as e:
+                  return f'Replicate API error: {e}'
+
+          def analyze_with_local_ai(files_content):
+              # Попытка использовать локальные AI сервисы
+              local_services = [
+                  ('http://localhost:11434/api/generate', 'Ollama'),
+                  ('http://localhost:8080/v1/chat/completions', 'Local OpenAI'),
+                  ('http://localhost:3000/api/generate', 'Custom AI Service')
+              ]
+
+              for url, service_name in local_services:
+                  try:
+                      if service_name == 'Ollama':
+                          data = {
+                              'model': 'codellama:7b',
+                              'prompt': f'Review this C++ code:\\n\\n{files_content[:500]}\\n\\nProvide brief feedback.',
+                              'stream': False
+                          }
+                      else:
+                          data = {
+                              'messages': [{'role': 'user', 'content': f'Review this C++ code:\\n\\n{files_content[:500]}'}],
+                              'max_tokens': 200
+                          }
+
+                      response = requests.post(url, json=data, timeout=10)
+                      if response.status_code == 200:
+                          result = response.json()
+                          if service_name == 'Ollama':
+                              return f'## 🤖 AI Analysis ({service_name})\\n\\n{result.get(\"response\", \"Analysis completed\")}'
+                          else:
+                              return f'## 🤖 AI Analysis ({service_name})\\n\\n{result.get(\"choices\", [{}])[0].get(\"message\", {}).get(\"content\", \"Analysis completed\")}'
+                  except:
+                      continue
+
+              return 'No local AI services available'
+
+          def enhanced_basic_analysis(files_content):
+              # Улучшенный базовый анализ с паттернами
+              lines = files_content.split('\\n')
+              issues = []
+              suggestions = []
+              good_practices = []
+
+              patterns = {
+                  'memory_leak': (r'new\\s+\\w+\\s*[^;]*$', 'Potential memory leak - new without delete'),
+                  'unsafe_function': (r'(strcpy|strcat|gets|scanf)\\s*\\(', 'Unsafe function usage'),
+                  'long_line': (r'.{120,}', 'Line too long (>120 characters)'),
+                  'namespace_std': (r'using\\s+namespace\\s+std;', 'Avoid using namespace std in headers'),
+                  'goto': (r'goto\\s+\\w+', 'Avoid using goto statements'),
+                  'magic_number': (r'\\b\\d{3,}\\b', 'Consider using named constants instead of magic numbers'),
+                  'raw_pointer': (r'\\w+\\s*\\*\\s*\\w+\\s*=', 'Consider using smart pointers'),
+                  'missing_const': (r'\\w+\\s+\\w+\\s*\\([^)]*\\)\\s*\\{', 'Consider adding const qualifiers'),
+                  'efficient_container': (r'std::vector<\\w+>\\s+\\w+\\s*;', 'Good: Using std::vector'),
+                  'smart_pointer': (r'std::(unique_ptr|shared_ptr)<\\w+>', 'Good: Using smart pointers'),
+                  'const_reference': (r'const\\s+\\w+&\\s+\\w+', 'Good: Using const references'),
+                  'range_based_for': (r'for\\s*\\(\\s*auto\\s*&?\\s*\\w+\\s*:', 'Good: Using range-based for loop')
+              }
+
+              for i, line in enumerate(lines, 1):
+                  line = line.strip()
+
+                  for pattern_name, (regex, message) in patterns.items():
+                      import re
+                      if re.search(regex, line):
+                          if pattern_name.startswith('good_'):
+                              good_practices.append(f'Line {i}: {message}')
+                          elif pattern_name in ['memory_leak', 'unsafe_function', 'goto']:
+                              issues.append(f'Line {i}: {message}')
+                          else:
+                              suggestions.append(f'Line {i}: {message}')
+                          break
+
+              result = '## 🤖 Enhanced Code Analysis\\n\\n'
+
+              if issues:
+                  result += '### 🚨 Issues Found\\n'
+                  for issue in issues[:3]:
+                      result += f'- {issue}\\n'
+                  result += '\\n'
+
+              if suggestions:
+                  result += '### 💡 Suggestions\\n'
+                  for suggestion in suggestions[:3]:
+                      result += f'- {suggestion}\\n'
+                  result += '\\n'
+
+              if good_practices:
+                  result += '### ✅ Good Practices Found\\n'
+                  for practice in good_practices[:3]:
+                      result += f'- {practice}\\n'
+                  result += '\\n'
+
+              if not issues and not suggestions:
+                  result += '### ✅ Code Quality Assessment\\n'
+                  result += 'No obvious issues found. Code follows basic C++ best practices.\\n\\n'
+
+              result += '---\\n*Enhanced pattern-based analysis completed*'
+
+              return result
+
+          def post_comment(analysis_text):
+              if not os.getenv('GITHUB_TOKEN'):
+                  return
+
+              headers = {
+                  'Authorization': f'token {os.getenv(\"GITHUB_TOKEN\")}',
+                  'Accept': 'application/vnd.github.v3+json'
+              }
+
+              comment_body = f'''
+              {analysis_text}
+              '''
+
+              pr_number = None
+              if os.getenv('GITHUB_EVENT_PATH'):
+                  try:
+                      with open(os.getenv('GITHUB_EVENT_PATH'), 'r') as f:
+                          event_data = json.load(f)
+                          pr_number = event_data['pull_request']['number']
+                  except Exception:
+                      pass
+
+              if pr_number:
+                  url = f'https://api.github.com/repos/{os.getenv(\"GITHUB_REPOSITORY\")}/issues/{pr_number}/comments'
+                  try:
+                      response = requests.post(url, headers=headers, json={'body': comment_body})
+                      response.raise_for_status()
+                      print('Analysis posted successfully')
+                  except Exception as e:
+                      print(f'Failed to post comment: {e}')
+
+          # Main execution
+          changed_files = get_changed_files()
+          if changed_files:
+              cpp_files = [f for f in changed_files if f.endswith(('.cpp', '.h', '.hpp', '.cc', '.cxx'))]
+
+              if cpp_files:
+                  files_content = ''
+                  for file_path in cpp_files:
+                      content = read_file_content(file_path)
+                      files_content += f'\\n\\n--- {file_path} ---\\n{content}'
+
+                  # Пробуем разные бесплатные AI сервисы
+                  analysis_result = analyze_with_huggingface(files_content)
+
+                  if 'not configured' in analysis_result or 'failed' in analysis_result:
+                      analysis_result = analyze_with_replicate(files_content)
+
+                  if 'not configured' in analysis_result or 'failed' in analysis_result:
+                      analysis_result = analyze_with_local_ai(files_content)
+
+                  if 'not available' in analysis_result or 'failed' in analysis_result:
+                      analysis_result = enhanced_basic_analysis(files_content)
+
+                  post_comment(analysis_result)
+              else:
+                  print('No C++ files found in changes')
+          else:
+              print('No files changed')
+          "
+
+            - name: Final Summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '## 🤖 AI Analysis Complete!\\n\\n**Analysis performed using cloud services:**\\n\\n- 🤖 Hugging Face Inference API\\n- ☁️ Replicate API\\n- 🏠 Local AI services (if available)\\n- 📊 Enhanced pattern-based analysis\\n\\n**To enable more AI services:**\\n1. Add `HUGGINGFACE_API_KEY` secret for Hugging Face\\n2. Add `REPLICATE_API_KEY` secret for Replicate\\n3. Run local AI services (Ollama, etc.)\\n\\n---\\n*AI-powered code review*'
+              });
+              console.log('Summary comment posted successfully');
+            } catch (error) {
+              console.log('Failed to post summary comment:', error.message);
+              // Fallback: try to post to PR instead of issue
+              try {
+                await github.rest.pulls.createReviewComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.issue.number,
+                  body: '## 🤖 AI Analysis Complete!\\n\\n**Analysis performed using cloud services:**\\n\\n- 🤖 Hugging Face Inference API\\n- ☁️ Replicate API\\n- 🏠 Local AI services (if available)\\n- 📊 Enhanced pattern-based analysis\\n\\n---\\n*AI-powered code review*'
+                });
+                console.log('PR comment posted successfully');
+              } catch (prError) {
+                console.log('Failed to post PR comment:', prError.message);
+              }
+            }

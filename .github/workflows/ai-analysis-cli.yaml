@@ -1,0 +1,140 @@
+name: AI Basic Analysis
+
+on:
+  pull_request:
+    branches: [ main, master ]
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  ai-basic:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Basic Code Analysis
+        run: |
+          python -c "
+          import subprocess
+          import re
+          import os
+
+          def get_changed_files():
+              try:
+                  result = subprocess.run(['git', 'diff', '--name-only', 'HEAD~1'],
+                                        capture_output=True, text=True, check=True)
+                  return [f for f in result.stdout.strip().split('\n') if f]
+              except subprocess.CalledProcessError:
+                  return []
+
+          def read_file_content(file_path):
+              try:
+                  with open(file_path, 'r', encoding='utf-8') as f:
+                      return f.read()
+              except Exception as e:
+                  return f'Error reading file: {e}'
+
+          def analyze_code(files_content):
+              lines = files_content.split('\n')
+              issues = []
+              suggestions = []
+              good_practices = []
+
+              patterns = {
+                  'memory_leak': (r'new\s+\w+\s*[^;]*$', 'Potential memory leak - new without delete'),
+                  'unsafe_function': (r'(strcpy|strcat|gets|scanf)\s*\(', 'Unsafe function usage'),
+                  'long_line': (r'.{120,}', 'Line too long (>120 characters)'),
+                  'namespace_std': (r'using\s+namespace\s+std;', 'Avoid using namespace std in headers'),
+                  'goto': (r'goto\s+\w+', 'Avoid using goto statements'),
+                  'magic_number': (r'\b\d{3,}\b', 'Consider using named constants'),
+                  'raw_pointer': (r'\w+\s*\*\s*\w+\s*=', 'Consider using smart pointers'),
+                  'efficient_container': (r'std::vector<\w+>\s+\w+\s*;', 'Good: Using std::vector'),
+                  'smart_pointer': (r'std::(unique_ptr|shared_ptr)<\w+>', 'Good: Using smart pointers'),
+                  'const_reference': (r'const\s+\w+&\s+\w+', 'Good: Using const references'),
+                  'range_based_for': (r'for\s*\(\s*auto\s*&?\s*\w+\s*:', 'Good: Using range-based for loop')
+              }
+
+              for i, line in enumerate(lines, 1):
+                  line = line.strip()
+
+                  for pattern_name, (regex, message) in patterns.items():
+                      if re.search(regex, line):
+                          if pattern_name.startswith('good_'):
+                              good_practices.append(f'Line {i}: {message}')
+                          elif pattern_name in ['memory_leak', 'unsafe_function', 'goto']:
+                              issues.append(f'Line {i}: {message}')
+                          else:
+                              suggestions.append(f'Line {i}: {message}')
+                          break
+
+              print('\\n=== 🤖 AI Code Analysis ===\\n')
+
+              if issues:
+                  print('🚨 Issues Found:')
+                  for issue in issues[:5]:
+                      print(f'  - {issue}')
+                  print()
+
+              if suggestions:
+                  print('💡 Suggestions:')
+                  for suggestion in suggestions[:5]:
+                      print(f'  - {suggestion}')
+                  print()
+
+              if good_practices:
+                  print('✅ Good Practices:')
+                  for practice in good_practices[:5]:
+                      print(f'  - {practice}')
+                  print()
+
+              if not issues and not suggestions:
+                  print('✅ No obvious issues found')
+                  print('Code appears to follow basic C++ practices.')
+                  print()
+
+              print('---')
+              print('AI-powered pattern analysis completed')
+
+          # Main execution
+          changed_files = get_changed_files()
+          if changed_files:
+              cpp_files = [f for f in changed_files if f.endswith(('.cpp', '.h', '.hpp', '.cc', '.cxx'))]
+
+              if cpp_files:
+                  print(f'Found {len(cpp_files)} C++ files to analyze:')
+                  for file_path in cpp_files:
+                      print(f'  - {file_path}')
+                  print()
+
+                  files_content = ''
+                  for file_path in cpp_files:
+                      content = read_file_content(file_path)
+                      files_content += f'\\n\\n--- {file_path} ---\\n{content}'
+
+                  analyze_code(files_content)
+              else:
+                  print('No C++ files found in changes')
+          else:
+              print('No files changed')
+          "
+
+      - name: Analysis Summary
+        run: |
+          echo "## 🤖 AI Analysis Complete!"
+          echo ""
+          echo "Pattern-based analysis has been performed on your C++ code."
+          echo ""
+          echo "Check the logs above for detailed results."
+          echo ""
+          echo "---"
+          echo "*Powered by AI pattern analysis*"

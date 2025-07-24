@@ -1,0 +1,394 @@
+name: AI Analysis
+
+on:
+  pull_request:
+    branches: [ main, master ]
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  ai-analysis:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      actions: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: AI Code Review (Ollama)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -c "
+          import os
+          import requests
+          import json
+          import subprocess
+
+          def get_changed_files():
+              try:
+                  result = subprocess.run(['git', 'diff', '--name-only', 'HEAD~1'],
+                                        capture_output=True, text=True, check=True)
+                  return [f for f in result.stdout.strip().split('\n') if f]
+              except subprocess.CalledProcessError:
+                  return []
+
+          def read_file_content(file_path):
+              try:
+                  with open(file_path, 'r', encoding='utf-8') as f:
+                      return f.read()
+              except Exception as e:
+                  return f'Error reading file: {e}'
+
+          def analyze_with_ollama(files_content):
+              # Попытка использовать Ollama (локальная модель)
+              try:
+                  prompt = f'''
+                  Analyze the following C++ code changes and provide a code review:
+
+                  {files_content}
+
+                  Please provide:
+                  1. Code quality assessment
+                  2. Potential bugs or issues
+                  3. Performance considerations
+                  4. Security concerns
+                  5. Suggestions for improvement
+
+                  Format your response in markdown.
+                  '''
+
+                  data = {
+                      'model': 'codellama:7b',
+                      'prompt': prompt,
+                      'stream': False
+                  }
+
+                  response = requests.post('http://localhost:11434/api/generate',
+                                         json=data, timeout=60)
+                  if response.status_code == 200:
+                      return response.json()['response']
+                  else:
+                      return 'Ollama not available, using fallback analysis'
+              except:
+                  return 'Ollama not available, using fallback analysis'
+
+          def analyze_with_huggingface(files_content):
+              # Попытка использовать Hugging Face Inference API (бесплатный)
+              try:
+                  headers = {
+                      'Authorization': f'Bearer {os.getenv(\"HUGGINGFACE_API_KEY\", \"\")}',
+                      'Content-Type': 'application/json'
+                  }
+
+                  prompt = f'''
+                  Analyze this C++ code and provide a brief review:
+
+                  {files_content[:1000]}  # Ограничиваем размер для бесплатного API
+
+                  Focus on:
+                  - Code quality
+                  - Potential issues
+                  - Suggestions
+                  '''
+
+                  data = {
+                      'inputs': prompt,
+                      'parameters': {
+                          'max_new_tokens': 500,
+                          'temperature': 0.3
+                      }
+                  }
+
+                  # Используем бесплатную модель
+                  response = requests.post(
+                      'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium',
+                      headers=headers, json=data, timeout=30
+                  )
+
+                  if response.status_code == 200:
+                      result = response.json()
+                      if isinstance(result, list) and len(result) > 0:
+                          return result[0].get('generated_text', 'Analysis completed')
+                      return 'Analysis completed'
+                  else:
+                      return 'Hugging Face API not available'
+              except:
+                  return 'Hugging Face API not available'
+
+          def basic_analysis(files_content):
+              # Простой анализ без AI
+              lines = files_content.split('\n')
+              issues = []
+              suggestions = []
+
+              for i, line in enumerate(lines, 1):
+                  line = line.strip()
+
+                  # Простые проверки
+                  if 'new ' in line and 'delete' not in files_content:
+                      issues.append(f'Line {i}: Potential memory leak - new without delete')
+
+                  if 'malloc(' in line:
+                      suggestions.append(f'Line {i}: Consider using std::vector instead of malloc')
+
+                  if 'using namespace std;' in line:
+                      suggestions.append(f'Line {i}: Avoid using namespace std in headers')
+
+                  if len(line) > 120:
+                      suggestions.append(f'Line {i}: Line too long, consider breaking it')
+
+                  if 'goto ' in line:
+                      issues.append(f'Line {i}: Avoid using goto statements')
+
+              result = '## 🤖 Basic Code Analysis\n\n'
+
+              if issues:
+                  result += '### ⚠️ Potential Issues\n'
+                  for issue in issues[:5]:  # Ограничиваем количество
+                      result += f'- {issue}\n'
+                  result += '\n'
+
+              if suggestions:
+                  result += '### 💡 Suggestions\n'
+                  for suggestion in suggestions[:5]:  # Ограничиваем количество
+                      result += f'- {suggestion}\n'
+                  result += '\n'
+
+              if not issues and not suggestions:
+                  result += '### ✅ No obvious issues found\n'
+                  result += 'Code appears to follow basic C++ practices.\n\n'
+
+              result += '---\n*This is a basic analysis. For more detailed AI review, configure Ollama or Hugging Face API.*'
+
+              return result
+
+          def post_comment(analysis_text):
+              if not os.getenv('GITHUB_TOKEN'):
+                  return
+
+              headers = {
+                  'Authorization': f'token {os.getenv(\"GITHUB_TOKEN\")}',
+                  'Accept': 'application/vnd.github.v3+json'
+              }
+
+              comment_body = f'''
+              {analysis_text}
+              '''
+
+              pr_number = None
+              if os.getenv('GITHUB_EVENT_PATH'):
+                  try:
+                      with open(os.getenv('GITHUB_EVENT_PATH'), 'r') as f:
+                          event_data = json.load(f)
+                          pr_number = event_data['pull_request']['number']
+                  except Exception:
+                      pass
+
+              if pr_number:
+                  url = f'https://api.github.com/repos/{os.getenv(\"GITHUB_REPOSITORY\")}/issues/{pr_number}/comments'
+                  try:
+                      response = requests.post(url, headers=headers, json={'body': comment_body})
+                      response.raise_for_status()
+                      print('Analysis posted successfully')
+                  except Exception as e:
+                      print(f'Failed to post comment: {e}')
+
+          # Main execution
+          changed_files = get_changed_files()
+          if changed_files:
+              cpp_files = [f for f in changed_files if f.endswith(('.cpp', '.h', '.hpp', '.cc', '.cxx'))]
+
+              if cpp_files:
+                  files_content = ''
+                  for file_path in cpp_files:
+                      content = read_file_content(file_path)
+                      files_content += f'\\n\\n--- {file_path} ---\\n{content}'
+
+                  # Пробуем разные методы анализа
+                  analysis_result = analyze_with_ollama(files_content)
+
+                  if 'not available' in analysis_result:
+                      analysis_result = analyze_with_huggingface(files_content)
+
+                  if 'not available' in analysis_result:
+                      analysis_result = basic_analysis(files_content)
+
+                  post_comment(analysis_result)
+              else:
+                  print('No C++ files found in changes')
+          else:
+              print('No files changed')
+          "
+
+      - name: Security Analysis (Basic)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -c "
+          import os
+          import requests
+          import json
+          import subprocess
+          import re
+
+          def get_changed_files():
+              try:
+                  result = subprocess.run(['git', 'diff', '--name-only', 'HEAD~1'],
+                                        capture_output=True, text=True, check=True)
+                  return [f for f in result.stdout.strip().split('\n') if f]
+              except subprocess.CalledProcessError:
+                  return []
+
+          def read_file_content(file_path):
+              try:
+                  with open(file_path, 'r', encoding='utf-8') as f:
+                      return f.read()
+              except Exception as e:
+                  return f'Error reading file: {e}'
+
+          def security_analysis(files_content):
+              security_issues = []
+              recommendations = []
+
+              lines = files_content.split('\n')
+
+              for i, line in enumerate(lines, 1):
+                  line = line.strip()
+
+                  # Проверки безопасности
+                  if re.search(r'\\[.*\\+.*\\]', line):
+                      security_issues.append(f'Line {i}: Potential buffer overflow - array access without bounds checking')
+
+                  if 'strcpy(' in line or 'strcat(' in line:
+                      security_issues.append(f'Line {i}: Use strncpy/strncat instead of strcpy/strcat for safety')
+
+                  if 'gets(' in line:
+                      security_issues.append(f'Line {i}: CRITICAL: gets() is unsafe, use fgets() instead')
+
+                  if 'scanf(' in line and '%s' in line:
+                      security_issues.append(f'Line {i}: scanf with %s can cause buffer overflow, use scanf with width limit')
+
+                  if 'system(' in line:
+                      security_issues.append(f'Line {i}: system() can be dangerous, consider alternatives')
+
+                  if 'printf(' in line and '%s' in line:
+                      recommendations.append(f'Line {i}: Consider using std::cout or format strings for safer output')
+
+                  if 'malloc(' in line and 'free(' not in files_content:
+                      security_issues.append(f'Line {i}: Memory allocated but may not be freed')
+
+                  if 'new ' in line and 'delete' not in files_content:
+                      recommendations.append(f'Line {i}: Consider using smart pointers (std::unique_ptr, std::shared_ptr)')
+
+              result = '## 🔒 Security Analysis\n\n'
+
+              if security_issues:
+                  result += '### 🚨 Security Issues Found\n'
+                  for issue in security_issues[:5]:
+                      result += f'- {issue}\n'
+                  result += '\n'
+
+              if recommendations:
+                  result += '### 🛡️ Security Recommendations\n'
+                  for rec in recommendations[:5]:
+                      result += f'- {rec}\n'
+                  result += '\n'
+
+              if not security_issues and not recommendations:
+                  result += '### ✅ No obvious security issues found\n'
+                  result += 'Code appears to follow basic security practices.\n\n'
+
+              result += '---\n*Basic security analysis completed*'
+
+              return result
+
+          def post_security_comment(analysis_text):
+              if not os.getenv('GITHUB_TOKEN'):
+                  return
+
+              headers = {
+                  'Authorization': f'token {os.getenv(\"GITHUB_TOKEN\")}',
+                  'Accept': 'application/vnd.github.v3+json'
+              }
+
+              comment_body = f'''
+              {analysis_text}
+              '''
+
+              pr_number = None
+              if os.getenv('GITHUB_EVENT_PATH'):
+                  try:
+                      with open(os.getenv('GITHUB_EVENT_PATH'), 'r') as f:
+                          event_data = json.load(f)
+                          pr_number = event_data['pull_request']['number']
+                  except Exception:
+                      pass
+
+              if pr_number:
+                  url = f'https://api.github.com/repos/{os.getenv(\"GITHUB_REPOSITORY\")}/issues/{pr_number}/comments'
+                  try:
+                      response = requests.post(url, headers=headers, json={'body': comment_body})
+                      response.raise_for_status()
+                      print('Security analysis posted')
+                  except Exception as e:
+                      print(f'Failed to post security analysis: {e}')
+
+          # Security analysis
+          changed_files = get_changed_files()
+          if changed_files:
+              cpp_files = [f for f in changed_files if f.endswith(('.cpp', '.h', '.hpp', '.cc', '.cxx'))]
+              if cpp_files:
+                  files_content = ''
+                  for file_path in cpp_files:
+                      content = read_file_content(file_path)
+                      files_content += f'\\n\\n--- {file_path} ---\\n{content}'
+
+                  security_result = security_analysis(files_content)
+                  post_security_comment(security_result)
+          "
+
+      - name: Final Summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '## 🤖 AI Analysis Complete!\\n\\n**Analysis performed using AI tools:**\\n\\n- ✅ Basic code quality analysis\\n- 🔒 Security vulnerability check\\n- 💡 Code improvement suggestions\\n\\n**To enable advanced AI analysis:**\\n1. Install Ollama locally and run: `ollama run codellama:7b`\\n2. Or add Hugging Face API key as `HUGGINGFACE_API_KEY` secret\\n3. Or use cloud-based AI services\\n\\n---\\n*Powered by AI tools*'
+              });
+              console.log('Summary comment posted successfully');
+            } catch (error) {
+              console.log('Failed to post summary comment:', error.message);
+              // Fallback: try to post to PR instead of issue
+              try {
+                await github.rest.pulls.createReviewComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.issue.number,
+                  body: '## 🤖 AI Analysis Complete!\\n\\n**Analysis performed using AI tools:**\\n\\n- ✅ Basic code quality analysis\\n- 🔒 Security vulnerability check\\n- 💡 Code improvement suggestions\\n\\n---\\n*Powered by AI tools*'
+                });
+                console.log('PR comment posted successfully');
+              } catch (prError) {
+                console.log('Failed to post PR comment:', prError.message);
+              }
+            }

@@ -1,0 +1,173 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-format cppcheck valgrind ccache
+
+    - name: Cache ccache files
+      uses: actions/cache@v3
+      with:
+        path: ~/.ccache
+        key: ccache-${{ github.sha }}
+        restore-keys: ccache-
+
+    - name: Style Check
+      run: |
+        find . -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) \
+          -not -path "./build/*" \
+          -not -path "./.git/*" \
+          -exec clang-format --style=Google --dry-run --Werror {} \;
+
+    - name: Static Analysis
+      run: |
+        cppcheck --enable=all --error-exitcode=1 \
+          --suppress=missingInclude \
+          --suppress=unmatchedSuppression \
+          --suppress=unusedFunction \
+          --suppress=noExplicitConstructor \
+          --suppress=useInitializationList \
+          */src/*.cpp */include/*.hpp
+
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
+        compiler: [gcc, clang]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential clang valgrind ccache
+
+    - name: Cache ccache files
+      uses: actions/cache@v3
+      with:
+        path: ~/.ccache
+        key: ccache-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ github.sha }}
+        restore-keys: ccache-${{ matrix.compiler }}-${{ matrix.build_type }}-
+
+    - name: Configure CMake
+      run: |
+        if [ "${{ matrix.compiler }}" = "gcc" ]; then
+          export CC=gcc CXX=g++
+        else
+          export CC=clang CXX=clang++
+        fi
+        cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }}
+
+    - name: Run Tests
+      working-directory: build
+      run: ctest --output-on-failure
+
+    - name: Memory Check
+      if: matrix.build_type == 'Debug'
+      working-directory: build
+      run: |
+        for test in test_task_*; do
+          if [ -x "$test" ]; then
+            valgrind --leak-check=full --error-exitcode=1 ./"$test"
+          fi
+        done
+
+    - name: Run Benchmarks
+      if: matrix.build_type == 'Release'
+      working-directory: build
+      run: |
+        for bench in benchmark_task_*; do
+          if [ -x "$bench" ]; then
+            ./"$bench" --benchmark_min_time=0.1
+          fi
+        done
+
+  sanitizers:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sanitizer: [address, undefined, thread]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential clang
+
+    - name: Configure CMake with Sanitizer
+      run: |
+        export CC=clang CXX=clang++
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCMAKE_CXX_FLAGS="-fsanitize=${{ matrix.sanitizer }}"
+
+    - name: Build
+      run: cmake --build build
+
+    - name: Run Tests with Sanitizer
+      working-directory: build
+      run: |
+        for test in test_task_*; do
+          if [ -x "$test" ]; then
+            ./"$test"
+          fi
+        done
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential lcov
+
+    - name: Configure CMake with Coverage
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCMAKE_CXX_FLAGS="--coverage"
+
+    - name: Build
+      run: cmake --build build
+
+    - name: Run Tests for Coverage
+      working-directory: build
+      run: |
+        for test in test_task_*; do
+          if [ -x "$test" ]; then
+            ./"$test"
+          fi
+        done
+
+    - name: Generate Coverage Report
+      run: |
+        lcov --capture --directory build --output-file coverage.info
+        lcov --remove coverage.info '/usr/*' --output-file coverage.info
+        lcov --list coverage.info
+
+    - name: Upload Coverage Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: coverage.info

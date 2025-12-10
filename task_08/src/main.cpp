@@ -1,3 +1,3 @@
-#include <iostream>
+#include "HashTable.hpp"
 
-int main() { return 0; }
+int main() {}

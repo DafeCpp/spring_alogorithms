@@ -1,0 +1,48 @@
+name: executable_checks
+
+on: [pull_request]
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y ninja-build cmake libgtest-dev
+
+      - name: Configure CMake
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Detect changes for task_01
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            task01_src:
+              - 'task_01/src/**'
+
+      - name: List task_01 tests
+        if: steps.changes.outputs.task01_src == 'true'
+        run: ls -la task_01/tests || true
+
+      - name: Run task_01 test cases
+        if: steps.changes.outputs.task01_src == 'true'
+        run: python3 scripts/run_cases.py --tasks task_01 --tests-layout in-task --timeout 2.0 --normalize strip --save-actual
+
+      - name: Upload actual outputs (if any)
+        if: steps.changes.outputs.task01_src == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: task_01-actual-outputs
+          path: task_01/tests/*.out.actual
+          if-no-files-found: ignore
+
+

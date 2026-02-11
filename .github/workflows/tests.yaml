@@ -77,3 +77,7 @@ jobs:
       - name: Test task 13
         working-directory: ${{github.workspace}}/build
         run: ./task_13/task_13_tests
+
+      - name: Test task 14
+        working-directory: ${{github.workspace}}/build
+        run: ./task_14/task_14_tests

@@ -25,9 +25,9 @@
 				"C_Cpp.clang_format_path": "clang-format",
 				"C_Cpp.clang_format_style": "file",
 				"C_Cpp.formatting": "clangFormat",
-				"clang-format.executable": "clang-format",
 				"clang-format.fallbackStyle": "Google",
 				"clang-format.language.cpp.enable": true,
+				"clang-format.executable": "/usr/bin/clang-format-18",
 				"clang.executable": "clang",
 				"editor.formatOnSave": true
 			},
@@ -35,7 +35,8 @@
 			"extensions": [
 				"llvm-vs-code-extensions.vscode-clangd",
 				"ms-vscode.cpptools",
-				"xaver.clang-format"
+				"xaver.clang-format",
+				"ms-vscode.cmake-tools"
 			]
 		}
 	},

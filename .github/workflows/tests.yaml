@@ -61,3 +61,23 @@ jobs:
       - name: Test task 09
         working-directory: ${{github.workspace}}/build
         run: ./task_09/task_09_tests
+
+      - name: Test task 10
+        working-directory: ${{github.workspace}}/build
+        run: ./task_10/task_10_tests
+
+      - name: Test task 11
+        working-directory: ${{github.workspace}}/build
+        run: ./task_11/task_11_tests
+
+      - name: Test task 12
+        working-directory: ${{github.workspace}}/build
+        run: ./task_12/task_12_tests
+
+      - name: Test task 13
+        working-directory: ${{github.workspace}}/build
+        run: ./task_13/task_13_tests
+
+      - name: Test task 14
+        working-directory: ${{github.workspace}}/build
+        run: ./task_14/task_14_tests

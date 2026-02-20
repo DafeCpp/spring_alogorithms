@@ -1,0 +1,79 @@
+name: executable_checks
+
+on:
+  pull_request:
+    paths:
+      - 'task_*/src/main.cpp'
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      tasks: ${{ steps.find-tasks.outputs.tasks }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed tasks
+        id: find-tasks
+        run: |
+          CHANGED=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} \
+            | grep -oP 'task_\d+(?=/src/main\.cpp)' \
+            | sort -u \
+            | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "tasks=$CHANGED" >> "$GITHUB_OUTPUT"
+          echo "Changed tasks: $CHANGED"
+
+  run-cases:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.tasks != '[]' && needs.detect-changes.outputs.tasks != ''
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        task: ${{ fromJson(needs.detect-changes.outputs.tasks) }}
+
+    name: "run_cases (${{ matrix.task }})"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y ninja-build cmake libgtest-dev
+
+      - name: Configure CMake
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build ${{ matrix.task }}
+        run: cmake --build build --target ${{ matrix.task }}
+
+      - name: Check for test cases
+        id: has-tests
+        run: |
+          if ls ${{ matrix.task }}/tests/*.in 1>/dev/null 2>&1; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "No .in test files found for ${{ matrix.task }}, skipping run_cases"
+          fi
+
+      - name: Run test cases for ${{ matrix.task }}
+        if: steps.has-tests.outputs.found == 'true'
+        run: |
+          python3 scripts/run_cases.py \
+            --tasks ${{ matrix.task }} \
+            --tests-layout in-task \
+            --timeout 2.0 \
+            --normalize strip \
+            --save-actual
+
+      - name: Upload actual outputs
+        if: steps.has-tests.outputs.found == 'true' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.task }}-actual-outputs
+          path: ${{ matrix.task }}/tests/*.out.actual
+          if-no-files-found: ignore

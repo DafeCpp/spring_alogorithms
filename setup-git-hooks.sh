@@ -1,4 +1,6 @@
 #!/bin/bash
+# Установка pre-commit хука для автоформатирования C++ через clang-format.
+# Выполните этот скрипт один раз: ./setup-git-hooks.sh
 
 # Create .git/hooks directory if it doesn't exist
 mkdir -p .git/hooks

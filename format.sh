@@ -10,7 +10,7 @@ fi
 
 # Find all C++ files in the project
 echo "Searching for C++ files..."
-FILES=$(find . -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -not -path "./build/*" -not -path "./.git/*")
+FILES=$(find . -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -not -path "./build/*" -not -path "./.git/*" -not -path "./_deps/*")
 
 if [ -z "$FILES" ]; then
     echo "No C++ files found to format."

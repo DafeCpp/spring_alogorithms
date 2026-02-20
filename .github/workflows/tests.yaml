@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Install gtest manually
         run: sudo apt-get install libgtest-dev
-
-      - uses: actions/checkout@v3
 
       - name: run cmake
         working-directory: ${{github.workspace}}/

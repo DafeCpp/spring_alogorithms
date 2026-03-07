@@ -1,0 +1,1 @@
+    TEST(SumOfTwo, Empty)

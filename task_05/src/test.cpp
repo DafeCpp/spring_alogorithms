@@ -12,9 +12,9 @@ TEST(TopologySort, Simple) {
   vector<int> v02{0, 0, 0, 0, 0};
   vector<int> v3{52, 52, 52, 52, 52};
   vector<int> v4{23, 24, 25, 21, 29, 22, 26, 23};
-  vector<int> v04{1, 1, 4, 2, 1, 1, 0, 0};
+  vector<int> v04{1, 1, 2, 1, 0, 1, 0, 0};
   vector<int> v5{-13, -5, 10, 10, 0, -3, -2, 4, -10};
-  vector<int> v05{1, 1, 0, 0, 3, 1, 1, 0};
+  vector<int> v05{1, 1, 0, 0, 3, 1, 1, 0, 0};
 
   ASSERT_EQ(temperature_rise(v1), v01);  // по возрастанию
   ASSERT_EQ(temperature_rise(v2), v02);  // по убыванию

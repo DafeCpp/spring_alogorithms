@@ -32,3 +32,24 @@ TEST(Test, Simple) {
   ASSERT_EQ(get_border_index(v12), 1);
   ASSERT_EQ(get_border_index(v13), 0);
 }
+
+void f(int i, vector<int> v) {
+  ASSERT_EQ(v[i], 0);
+  ASSERT_EQ(v[i] + 1, 1);
+}
+
+TEST(Test, OutOfSync) {
+  vector<int> v1{0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1};
+  vector<int> v2{0, 1, 0, 1, 0, 1, 0, 1};
+  vector<int> v3{0, 0, 0, 1, 0, 0, 0, 1};
+  vector<int> v4{0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1};
+  vector<int> v5{0, 1, 0, 1};
+  vector<int> v6{0, 1, 1, 1, 1, 0, 1};
+
+  f(get_border_index(v1), v1);
+  f(get_border_index(v2), v2);
+  f(get_border_index(v3), v3);
+  f(get_border_index(v4), v4);
+  f(get_border_index(v5), v5);
+  f(get_border_index(v6), v6);
+}

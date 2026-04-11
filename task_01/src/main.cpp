@@ -29,25 +29,6 @@ int main() {
     cout << result.first << " " << result.second << endl;
   /*
   python3 ./scripts/run_cases.py --tasks task_01
-  int l{0}, r{N-1};
-
-  int s;
-  while (l != r)
-  {
-      s = v[l] + v[r];
-      if (s == S)
-      {
-          cout << v[l] << " " << v[r] << endl;
-          break;
-      }
-      else
-      {
-          if (s > S) --r;
-          else ++l;
-      }
-  }
-
-  if (l == r) cout << -1 << endl;
   */
   return 0;
 }

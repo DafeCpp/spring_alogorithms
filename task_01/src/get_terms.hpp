@@ -25,5 +25,5 @@ pair<int, int> get_terms(vector<int> v, int S) {
     }
   }
 
-  if (l == r) return pair(-1, -1);
+  return pair(-1, -1);
 }

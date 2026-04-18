@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <MergeSort.hpp>
+#include <merge_sort.hpp>
 #include <vector>
 
 TEST(MergeSort, Simple) {
@@ -26,7 +26,7 @@ TEST(MergeSort, Empty) {
   ASSERT_EQ(MergeSort(v_empty), v_empty);
 }
 
-TEST(Test, Single) {
+TEST(MergeSort, Single) {
   std::vector<int> v_single = {52};
   ASSERT_EQ(MergeSort(v_single), v_single);
 }

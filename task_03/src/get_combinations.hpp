@@ -1,40 +1,38 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
-const vector<string> v_s{"abc", "def",  "ghi", "jkl",
-                         "mno", "pqrs", "tuv", "wxyz"};
+const std::vector<std::string> num_to_let{"abc", "def",  "ghi", "jkl",
+                                          "mno", "pqrs", "tuv", "wxyz"};
 constexpr int shift = 2;
 
-void get_small_combination(vector<int> nums, int i, string s,
-                           vector<string> &result) {
-  if (i == nums.size()) {
-    result.push_back(s);
+void FillingArray(std::vector<int> nums, int index, std::string combination,
+                  std::vector<std::string> &result) {
+  if (index == nums.size()) {
+    result.push_back(combination);
     return;
   }
 
-  string s_new;
-  for (char c : v_s[nums[i] - shift]) {
-    s_new = s + c;
-    get_small_combination(nums, i + 1, s_new, result);
+  std::string new_combination;
+  for (char c : num_to_let[nums[index] - shift]) {
+    new_combination = combination + c;
+    FillingArray(nums, index + 1, new_combination, result);
   }
 }
 
-vector<string> get_combinations(string digits) {
-  vector<int> nums;
+std::vector<std::string> GetCombinations(std::string digits) {
+  std::vector<int> nums;
   for (char c : digits) {
     if (c >= '2' && c <= '9') {
       nums.push_back(c - '0');
     }
   }
-  vector<string> result;
+  std::vector<std::string> result;
 
   if (nums.empty()) return result;
 
-  string s;
-  int i = 0;
+  std::string combination;
+  int index = 0;
 
-  get_small_combination(nums, i, s, result);
+  FillingArray(nums, index, combination, result);
   return result;
 }

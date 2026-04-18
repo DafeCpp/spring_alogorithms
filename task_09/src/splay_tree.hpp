@@ -11,14 +11,15 @@ struct Node {
 };
 
 struct SplayTree {
-  Node* root{nullptr};
-
-  void Splay(Node* n);
   void Insert(int key);  // вставка ключа
   bool Find(int key);    // поиск ключа
   void Remove(int key);  // удаление ключа
 
  private:
-  void rotateRight(Node* n);
-  void rotateLeft(Node* n);
+  Node* root{nullptr};
+
+  void RotateRight(Node* n);
+  void RotateLeft(Node* n);
+
+  void Splay(Node* n);
 };

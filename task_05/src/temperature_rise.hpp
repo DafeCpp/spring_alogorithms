@@ -1,9 +1,8 @@
 #include <vector>
 
-using namespace std;
-
-vector<int> temperature_rise(vector<int> v1) {
-  vector<int> stack, v2(v1.size(), 0);
+std::vector<int> TemperatureRise(std::vector<int> v1) {
+  std::vector<int> stack;
+  std::vector<int> v2(v1.size(), 0);
 
   size_t i = 0;
   while (i < v1.size()) {

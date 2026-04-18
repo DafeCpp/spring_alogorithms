@@ -4,31 +4,28 @@
 #include <string>
 #include <vector>
 
-using namespace std;
+// python3 ./scripts/run_cases.py --tasks task_01
 
 int main() {
   int S, N;
-  vector<int> v;
-  string line3, line1, line2;
+  std::vector<int> v;
+  std::string line3, line1, line2;
 
-  getline(cin, line1);
-  getline(cin, line2);
-  getline(cin, line3);
+  getline(std::cin, line1);
+  getline(std::cin, line2);
+  getline(std::cin, line3);
 
   S = stoi(line1);
   N = stoi(line2);
 
-  istringstream is(line3);
+  std::istringstream is(line3);
 
   int x;
   while (is >> x) v.push_back(x);
-  pair<int, int> result = get_terms(v, S);
-  if (result == pair(-1, -1))
-    cout << -1 << endl;
+  std::pair<int, int> result = GetTerms(v, S);
+  if (result == std::pair(-1, -1))
+    std::cout << -1 << std::endl;
   else
-    cout << result.first << " " << result.second << endl;
-  /*
-  python3 ./scripts/run_cases.py --tasks task_01
-  */
+    std::cout << result.first << " " << result.second << std::endl;
   return 0;
 }

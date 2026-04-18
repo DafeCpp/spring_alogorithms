@@ -1,8 +1,6 @@
 #include <vector>
 
-using namespace std;
-
-int get_border_index(vector<int> v) {
+int GetBorderIndex(std::vector<int> v) {
   int N = v.size();
 
   if (v[1] == 1) return 0;

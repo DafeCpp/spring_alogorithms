@@ -3,13 +3,11 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 int main() {
-  string digits;
-  getline(cin, digits);
+  std::string digits;
+  getline(std::cin, digits);
 
-  vector<string> result = get_combinations(digits);
+  std::vector<std::string> result = GetCombinations(digits);
 
-  for (string str : result) cout << str << " ";
+  for (std::string str : result) std::cout << str << " ";
 }

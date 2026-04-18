@@ -3,27 +3,25 @@
 #include <string>
 #include <vector>
 
-using namespace std;
+std::pair<int, int> GetTerms(const std::vector<int>& array, int sum) {
+  int n = array.size();
 
-pair<int, int> get_terms(vector<int> v, int S) {
-  int N = v.size();
+  if (n == 0 || n == 1) return std::pair(-1, -1);
 
-  if (N == 0 || N == 1) return pair(-1, -1);
+  int l{0}, r{n - 1};
 
-  int l{0}, r{N - 1};
-
-  int s;
+  int current_sum;
   while (l != r) {
-    s = v[l] + v[r];
-    if (s == S) {
-      return pair(v[l], v[r]);
+    current_sum = array[l] + array[r];
+    if (current_sum == sum) {
+      return std::pair(array[l], array[r]);
     } else {
-      if (s > S)
+      if (current_sum > sum)
         --r;
       else
         ++l;
     }
   }
 
-  return pair(-1, -1);
+  return std::pair(-1, -1);
 }

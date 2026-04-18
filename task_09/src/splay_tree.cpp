@@ -2,7 +2,7 @@
 
 #include <string>
 
-void SplayTree::rotateLeft(Node* n) {
+void SplayTree::RotateLeft(Node* n) {
   Node* m = n->right;
   if (!m) return;
 
@@ -23,7 +23,7 @@ void SplayTree::rotateLeft(Node* n) {
     root = m;
 }
 
-void SplayTree::rotateRight(Node* n) {
+void SplayTree::RotateRight(Node* n) {
   Node* m = n->left;
   if (!m) return;
 
@@ -49,26 +49,26 @@ void SplayTree::Splay(Node* n) {
 
   if (!n->parent->parent) {
     if (n->parent->left == n)
-      rotateRight(n->parent);
+      RotateRight(n->parent);
     else
-      rotateLeft(n->parent);
+      RotateLeft(n->parent);
     return;
   }
   if (n->parent->right == n) {
     if (n->parent->parent->right == n->parent) {
-      rotateLeft(n->parent->parent);
-      rotateLeft(n->parent);
+      RotateLeft(n->parent->parent);
+      RotateLeft(n->parent);
     } else {
-      rotateLeft(n->parent);
-      rotateRight(n->parent);
+      RotateLeft(n->parent);
+      RotateRight(n->parent);
     }
   } else {
     if (n->parent->parent->left == n->parent) {
-      rotateRight(n->parent->parent);
-      rotateRight(n->parent);
+      RotateRight(n->parent->parent);
+      RotateRight(n->parent);
     } else {
-      rotateRight(n->parent);
-      rotateLeft(n->parent);
+      RotateRight(n->parent);
+      RotateLeft(n->parent);
     }
   }
   Splay(n);

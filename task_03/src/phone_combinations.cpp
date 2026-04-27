@@ -7,11 +7,9 @@ namespace {
 constexpr std::array<const char*, 10> kDigitToLetters = {
     "", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
 
-void BuildCombinations(
-    const std::string& digits,
-    const size_t index,
-    std::string& current,
-    std::vector<std::string>& combinations) {
+void BuildCombinations(const std::string& digits, const size_t index,
+                       std::string& current,
+                       std::vector<std::string>& combinations) {
   if (index == digits.size()) {
     combinations.push_back(current);
     return;

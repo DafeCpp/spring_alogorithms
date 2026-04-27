@@ -2,17 +2,14 @@
 
 #include <vector>
 
-#include "./mergeSort.cpp"
+#include "../heared/mergeSort.h"
 
 namespace {
 
 std::vector<int> SortCopy(std::vector<int> values) {
-  if (values.empty()) {
-    mergeSort<int>(values, 0, 0);
-    return values;
+  if (!values.empty()) {
+    mergeSort<int>(values, 0, values.size() - 1);
   }
-
-  mergeSort<int>(values, 0, values.size() - 1);
   return values;
 }
 
@@ -43,6 +40,4 @@ TEST(MergeSortTest, HandlesSingleElement) {
   EXPECT_EQ(SortCopy({42}), (std::vector<int>{42}));
 }
 
-TEST(MergeSortTest, HandlesEmptyArray) {
-  EXPECT_TRUE(SortCopy({}).empty());
-}
+TEST(MergeSortTest, HandlesEmptyArray) { EXPECT_TRUE(SortCopy({}).empty()); }

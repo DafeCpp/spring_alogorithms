@@ -2,9 +2,7 @@
 
 #include <algorithm>
 
-BalancedBST::~BalancedBST() {
-  Destroy(root_);
-}
+BalancedBST::~BalancedBST() { Destroy(root_); }
 
 int BalancedBST::Height(Node* node) {
   return node == nullptr ? 0 : node->height;
@@ -121,14 +119,8 @@ void BalancedBST::Destroy(Node* node) {
   delete node;
 }
 
-void BalancedBST::Insert(int key) {
-  root_ = Insert(root_, key);
-}
+void BalancedBST::Insert(int key) { root_ = Insert(root_, key); }
 
-bool BalancedBST::Find(int key) const {
-  return Find(root_, key);
-}
+bool BalancedBST::Find(int key) const { return Find(root_, key); }
 
-void BalancedBST::Remove(int key) {
-  root_ = Remove(root_, key);
-}
+void BalancedBST::Remove(int key) { root_ = Remove(root_, key); }

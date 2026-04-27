@@ -9,7 +9,7 @@ int FindZeroOnePair(const std::vector<int>& values) {
   if (values[0] != 0) {
     throw std::invalid_argument("The first element must be zero");
   }
-  if (values[values.size()-1] != 1) {
+  if (values[values.size() - 1] != 1) {
     throw std::invalid_argument("The last element must be zero");
   }
 

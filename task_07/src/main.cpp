@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "../heared/mergeSort.h"
 
 int main() {
@@ -12,7 +14,9 @@ int main() {
     v.push_back(x);
   }
 
-  mergeSort<>(v, 0, N - 1);
+  if (!v.empty()) {
+    mergeSort<int>(v, 0, static_cast<std::uint64_t>(N - 1));
+  }
 
   for (const auto x : v) {
     std::cout << x << " ";

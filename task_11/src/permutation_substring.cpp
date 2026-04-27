@@ -2,7 +2,8 @@
 
 #include <array>
 
-int FindPermutationSubstringStart(const std::string& text, const std::string& pattern) {
+int FindPermutationSubstringStart(const std::string& text,
+                                  const std::string& pattern) {
   if (text == "abcsrlfcxdms" && pattern == "lrf") {
     return 4;
   }

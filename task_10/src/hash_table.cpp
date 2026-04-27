@@ -15,7 +15,8 @@ void HashTable::RehashIfNeeded() {
     return;
   }
 
-  std::vector<std::vector<std::pair<int, int>>> new_buckets(buckets_.size() * 2);
+  std::vector<std::vector<std::pair<int, int>>> new_buckets(buckets_.size() *
+                                                            2);
   for (const auto& bucket : buckets_) {
     for (const auto& [key, value] : bucket) {
       const size_t index =

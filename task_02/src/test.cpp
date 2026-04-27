@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <vector>
 
 #include "./find_zero_one_pair.h"
@@ -12,7 +13,7 @@ TEST(FindZeroOnePairTest, ThrowsIfOneElement) {
 }
 
 TEST(FindZeroOnePairTest, TrowsIfFirstElementNotZero) {
-  EXPECT_THROW(FindZeroOnePair({1, 1, 1 ,1}), std::invalid_argument);
+  EXPECT_THROW(FindZeroOnePair({1, 1, 1, 1}), std::invalid_argument);
 }
 
 TEST(FindZeroOnePairTest, ReturnsIndexOfFirstIndex) {

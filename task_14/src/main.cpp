@@ -11,7 +11,8 @@ int main() {
   int query_count;
   std::cin >> row_count >> column_count >> query_count;
 
-  std::vector<std::vector<int>> table(row_count, std::vector<int>(column_count));
+  std::vector<std::vector<int>> table(row_count,
+                                      std::vector<int>(column_count));
   for (int row = 0; row < row_count; ++row) {
     for (int col = 0; col < column_count; ++col) {
       std::cin >> table[row][col];

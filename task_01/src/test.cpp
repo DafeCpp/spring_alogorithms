@@ -94,13 +94,10 @@ TEST(FindValuesTest, LargeNumbers) {
   EXPECT_EQ(FindValues(1100, 6, v), std::make_pair(500, 600));
 }
 
-// Test with unsorted input (though specification says sorted)
-TEST(FindValuesTest, UnsortedInput) {
-  std::vector<int> v = {3, 1, 4, 2,
-                        5};  // Unsorted, but algorithm assumes sorted!
-  // Should work anyway? Two-pointer requires sorted array
-  // EXPECT_EQ(FindValues(5, 5, v), std::make_pair(1, 4)); // Might fail if not
-  // sorted
+// Test a case where the valid pair is found away from the array boundaries
+TEST(FindValuesTest, PairInMiddle) {
+  std::vector<int> v = {-8, -3, 1, 4, 6, 12};
+  EXPECT_EQ(FindValues(3, 6, v), std::make_pair(-3, 6));
 }
 
 // Test where left and right pointers cross without finding solution

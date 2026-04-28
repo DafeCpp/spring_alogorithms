@@ -1,4 +1,4 @@
-#include "../header/mergeSort.h"
+#include "../heared/mergeSort.h"
 
 template <typename T>
 void merge(std::vector<T>& data, const std::uint64_t left,

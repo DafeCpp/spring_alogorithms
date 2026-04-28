@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "../header/mergeSort.h"
+#include "../heared/mergeSort.h"
 
 int main() {
   int N;

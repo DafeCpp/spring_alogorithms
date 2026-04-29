@@ -13,6 +13,7 @@ function(add_homework_task)
   endif()
 
   add_executable(${TASK_NAME} ${TASK_SOURCES})
+  target_compile_features(${TASK_NAME} PRIVATE cxx_std_23)
   target_include_directories(
     ${TASK_NAME}
     PRIVATE
@@ -21,8 +22,9 @@ function(add_homework_task)
   )
   target_link_libraries(${TASK_NAME} PRIVATE Utils)
 
-  if(TASK_TEST_SOURCES)
+  if(BUILD_TESTING AND TASK_TEST_SOURCES)
     add_executable(${TASK_NAME}_tests ${TASK_TEST_SOURCES})
+    target_compile_features(${TASK_NAME}_tests PRIVATE cxx_std_23)
     target_include_directories(
       ${TASK_NAME}_tests
       PRIVATE

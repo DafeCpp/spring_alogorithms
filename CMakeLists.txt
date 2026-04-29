@@ -1,9 +1,6 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 
-project(homeworks CXX)
-
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(homeworks LANGUAGES CXX)
 
 option(BUILD_SANDBOX "Build sandbox targets" OFF)
 option(BUILD_ADDITIONAL_TASKS "Build additional tasks" OFF)
@@ -31,24 +28,27 @@ if(BUILD_TASK AND build_task_index EQUAL -1)
   message(FATAL_ERROR "Unknown BUILD_TASK='${BUILD_TASK}'. Expected one of: ${HOMEWORK_TASKS}")
 endif()
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lib)
+add_subdirectory(lib)
 
-enable_testing()
-find_package(GTest REQUIRED)
-include(GoogleTest)
+include(CTest)
+
+if(BUILD_TESTING)
+  find_package(GTest REQUIRED)
+  include(GoogleTest)
+endif()
 
 if(BUILD_TASK)
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/${BUILD_TASK})
+  add_subdirectory(${BUILD_TASK})
 else()
   foreach(task IN LISTS HOMEWORK_TASKS)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/${task})
+    add_subdirectory(${task})
   endforeach()
 
   if(BUILD_SANDBOX)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sandbox)
+    add_subdirectory(sandbox)
   endif()
 
   if(BUILD_ADDITIONAL_TASKS)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/additional_tasks)
+    add_subdirectory(additional_tasks)
   endif()
 endif()

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stack>
 #include <vector>
 
 class Stack {
@@ -8,16 +9,15 @@ class Stack {
   int Pop();
 
  private:
-  std::vector<int> data_;
+  std::stack<int> data_;
 };
 
 class MinStack {
  public:
   void Push(int value);
   int Pop();
-  int GetMin() const;
+  int GetMin();
 
  private:
   std::vector<int> data_;
-  std::vector<int> mins_;
 };

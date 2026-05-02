@@ -24,6 +24,6 @@ i
 
 | Ввод | Вывод |
 |------|-------|
-| `abcsrlfcxdms`<br>`lrf` | `4` |
+| `abcsrlfcxdms`<br>`lrf` | `5` |
 | `smnkfwlvk`<br>`nmsf` | `-1` |
 | `abcabc`<br>`cab` | `1` |

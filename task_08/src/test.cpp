@@ -4,7 +4,7 @@
 
 #include "order_statistic.hpp"
 
-TEST(TopologySort, Simple) {
+TEST(Test, Simple) {
   std::vector<int> v1{0, 1};
   std::vector<int> v2{0, 0, 0, 1, 1};
   std::vector<int> v3{0, 0, 0, 0, 0, 1};

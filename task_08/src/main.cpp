@@ -1,22 +1,16 @@
 #include <iostream>
 #include <vector>
 
-#include "get_k_element.hpp"
-
-using namespace std;
+#include "order_statistic.hpp"
 
 int main() {
-  int N, K;
-  cin >> N >> K;
+  int n, K;
+  std::cin >> n >> K;
 
-  vector<int> v;
+  std::vector<int> array(n);
 
-  for (int i = 0; i < N; ++i) {
-    int n;
-    cin >> n;
-    v.push_back(n);
-  }
+  for (int i = 0; i < n; ++i) std::cin >> array[i];
 
-  int left{0}, right(N - 1);
-  cout << get_k_element(v, K, left, right) << endl;
+  int left{0}, right(n - 1);
+  std::cout << OrderStatistic(array, K, left, right) << "\n";
 }

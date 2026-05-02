@@ -1,3 +1,4 @@
+#include <string>
 #include <vector>
 
 std::vector<int> GetNonDecreasingRanges(
@@ -27,4 +28,13 @@ std::vector<int> GetNonDecreasingRanges(
     max_right_rows[i] = max_in_row;
   }
   return max_right_rows;
+}
+
+std::string IsThereNonDecreasingColumn(int left, int right,
+                                       const std::vector<int>& max_right_rows) {
+  if (max_right_rows.empty()) return "No";
+  if (max_right_rows[left - 1] >= right - 1)
+    return "Yes";
+  else
+    return "No";
 }

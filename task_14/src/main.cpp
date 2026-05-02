@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "sorted_column.hpp"
+#include "non_decreasing_ranges.hpp"
 
 int main() {
   int n, m, k;
@@ -16,9 +16,7 @@ int main() {
   for (int i = 0; i < k; ++i) {
     int left, right;
     std::cin >> left >> right;
-    if (max_right_rows[left - 1] >= right - 1)
-      std::cout << "Yes\n";
-    else
-      std::cout << "No\n";
+    std::cout << IsThereNonDecreasingColumn(left, right, max_right_rows)
+              << "\n";
   }
 }

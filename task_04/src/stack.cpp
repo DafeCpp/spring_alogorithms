@@ -1,21 +1,32 @@
 #include "stack.hpp"
 
-#include <algorithm>
+Stack::Stack() {
+    head = nullptr;
+}
 
-void Stack::Push(int value) { data_.push(value); }
+void Stack::Push(int value) {
+    Node *node = new Node();
+    node->value = value;
+    node->prev = head;
+    head = node;
+}
 
 int Stack::Pop() {
-  auto result = data_.top();
-  data_.pop();
-  return result;
+    if (!head) {
+        return -1;
+    }
+    int value = head->value;
+    Node *temp = head->prev;
+    delete head;
+    head = temp;
+    return value;
 }
 
-void MinStack::Push(int value) { data_.push_back(value); }
-
-int MinStack::Pop() {
-  auto result = data_.back();
-  data_.pop_back();
-  return result;
+Stack::~Stack() {
+    Node* tmp = head;
+    while (tmp) {
+        Node* pr = tmp->prev;
+        delete tmp;
+        tmp = pr;
+    }
 }
-
-int MinStack::GetMin() { return *std::min_element(data_.begin(), data_.end()); }

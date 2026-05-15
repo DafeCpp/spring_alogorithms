@@ -9,7 +9,7 @@ class Stack {
   int Pop();
 
  private:
-  std::stack<int> data_;
+  std::vector<int> stack_;
 };
 
 class MinStack {
@@ -19,5 +19,6 @@ class MinStack {
   int GetMin();
 
  private:
-  std::vector<int> data_;
+  std::vector<int> stack_;
+  std::vector<int> min_stack_;
 };

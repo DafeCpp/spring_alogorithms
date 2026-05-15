@@ -11,11 +11,11 @@ struct Lesson {
   }
 };
 
-std::vector<Lesson> GetSelectedLessons(std::vector<Lesson>& lessons) {
+std::vector<Lesson> GetSelectedLessons(std::vector<Lesson> lessons) {
   if (lessons.empty()) return lessons;
 
-  std::sort(lessons.begin(), lessons.end(),
-            [](const Lesson& a, const Lesson& b) { return a.end < b.end; });
+  sort(lessons.begin(), lessons.end(),
+       [](const Lesson& a, const Lesson& b) { return a.end < b.end; });
 
   std::vector<Lesson> selected_lessons;
 

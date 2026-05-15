@@ -9,8 +9,8 @@ int main() {
   std::vector<int> v;
   std::string line1, line2;
 
-  getline(cin, line1);
-  getline(cin, line2);
+  getline(std::cin, line1);
+  getline(std::cin, line2);
 
   N = stoi(line1);
 
@@ -18,6 +18,6 @@ int main() {
   int x;
   while (is >> x) v.push_back(x);
 
-  std::cout << GetBorderIndex(v) << endl;
+  std::cout << GetBorderIndex(v) << std::endl;
   return 0;
 }

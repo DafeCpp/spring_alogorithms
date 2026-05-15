@@ -1,4 +1,3 @@
-#include <random>
 #include <vector>
 
 int OrderStatistic(std::vector<int> array, int K, int left, int right) {

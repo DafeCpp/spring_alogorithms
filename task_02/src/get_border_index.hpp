@@ -1,12 +1,7 @@
 #include <vector>
 
-int GetBorderIndex(std::vector<int> v) {
-  int N = v.size();
-
-  if (v[1] == 1) return 0;
-  if (v[N - 2] == 0) return N - 2;
-
-  int left = 0, right = N - 1;
+int GetBorderIndex(const std::vector<int> &v) {
+  int left = 0, right = v.size() - 1;
 
   while (left + 1 < right) {
     int mid = (left + right) / 2;

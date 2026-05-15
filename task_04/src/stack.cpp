@@ -10,7 +10,7 @@ int Stack::Pop() {
 
 void MinStack::Push(int value) {
   stack_.push_back(value);
-  if (min_stack_.size() == 0 || value < min_stack_.back())
+  if (min_stack_.empty() || value < min_stack_.back())
     min_stack_.push_back(value);
   else
     min_stack_.push_back(min_stack_.back());

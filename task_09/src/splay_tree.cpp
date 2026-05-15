@@ -1,77 +1,75 @@
 #include "splay_tree.hpp"
 
-#include <string>
+void SplayTree::RotateLeft(Node* node) {
+  Node* node_right = node->right;
+  if (!node_right) return;
 
-void SplayTree::RotateLeft(Node* n) {
-  Node* m = n->right;
-  if (!m) return;
+  Node* parent = node->parent;
+  node->right = node_right->left;
+  if (node_right->left) node_right->left->parent = node;
 
-  Node* parent = n->parent;
-  n->right = m->left;
-  if (m->left) m->left->parent = n;
-
-  m->left = n;
-  n->parent = m;
-  m->parent = parent;
+  node_right->left = node;
+  node->parent = node_right;
+  node_right->parent = parent;
 
   if (parent) {
-    if (parent->left == n)
-      parent->left = m;
+    if (parent->left == node)
+      parent->left = node_right;
     else
-      parent->right = m;
+      parent->right = node_right;
   } else
-    root = m;
+    root = node_right;
 }
 
-void SplayTree::RotateRight(Node* n) {
-  Node* m = n->left;
-  if (!m) return;
+void SplayTree::RotateRight(Node* node) {
+  Node* node_left = node->left;
+  if (!node_left) return;
 
-  Node* parent = n->parent;
-  n->left = m->right;
-  if (m->right) m->right->parent = n;
+  Node* parent = node->parent;
+  node->left = node_left->right;
+  if (node_left->right) node_left->right->parent = node;
 
-  m->right = n;
-  n->parent = m;
-  m->parent = parent;
+  node_left->right = node;
+  node->parent = node_left;
+  node_left->parent = parent;
 
   if (parent) {
-    if (parent->left == n)
-      parent->left = m;
+    if (parent->left == node)
+      parent->left = node_left;
     else
-      parent->right = m;
+      parent->right = node_left;
   } else
-    root = m;
+    root = node_left;
 }
 
-void SplayTree::Splay(Node* n) {
-  if (!n->parent) return;
+void SplayTree::Splay(Node* node) {
+  if (!node->parent) return;
 
-  if (!n->parent->parent) {
-    if (n->parent->left == n)
-      RotateRight(n->parent);
+  if (!node->parent->parent) {
+    if (node->parent->left == node)
+      RotateRight(node->parent);
     else
-      RotateLeft(n->parent);
+      RotateLeft(node->parent);
     return;
   }
-  if (n->parent->right == n) {
-    if (n->parent->parent->right == n->parent) {
-      RotateLeft(n->parent->parent);
-      RotateLeft(n->parent);
+  if (node->parent->right == node) {
+    if (node->parent->parent->right == node->parent) {
+      RotateLeft(node->parent->parent);
+      RotateLeft(node->parent);
     } else {
-      RotateLeft(n->parent);
-      RotateRight(n->parent);
+      RotateLeft(node->parent);
+      RotateRight(node->parent);
     }
   } else {
-    if (n->parent->parent->left == n->parent) {
-      RotateRight(n->parent->parent);
-      RotateRight(n->parent);
+    if (node->parent->parent->left == node->parent) {
+      RotateRight(node->parent->parent);
+      RotateRight(node->parent);
     } else {
-      RotateRight(n->parent);
-      RotateLeft(n->parent);
+      RotateRight(node->parent);
+      RotateLeft(node->parent);
     }
   }
-  Splay(n);
+  Splay(node);
 }
 
 void SplayTree::Insert(int key) {
@@ -91,15 +89,15 @@ void SplayTree::Insert(int key) {
       current = current->right;
   }
 
-  Node* new_n = new Node(key);
-  new_n->parent = parent;
+  Node* new_node = new Node(key);
+  new_node->parent = parent;
 
   if (key <= parent->key)
-    parent->left = new_n;
+    parent->left = new_node;
   else
-    parent->right = new_n;
+    parent->right = new_node;
 
-  Splay(new_n);
+  Splay(new_node);
 }
 
 bool SplayTree::Find(int key) {
@@ -124,7 +122,7 @@ bool SplayTree::Find(int key) {
 
 void SplayTree::Remove(int key) {
   if (Find(key)) {
-    Node* n = root;
+    Node* node = root;
 
     Node* left_tree = root->left;
     Node* right_tree = root->right;
@@ -132,13 +130,13 @@ void SplayTree::Remove(int key) {
     if (!left_tree) {
       root = right_tree;
       if (right_tree) right_tree->parent = nullptr;
-      delete n;
+      delete node;
       return;
     }
     if (!right_tree) {
       root = left_tree;
       if (left_tree) left_tree->parent = nullptr;
-      delete n;
+      delete node;
       return;
     }
 
@@ -159,6 +157,6 @@ void SplayTree::Remove(int key) {
     last->left = left_tree;
     left_tree->parent = last;
 
-    delete n;
+    delete node;
   }
 }

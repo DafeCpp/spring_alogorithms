@@ -2,19 +2,17 @@
 #include <merge_sort.hpp>
 #include <vector>
 
-using namespace std;
-
 int main() {
   int N;
-  cin >> N;
-  vector<int> v;
+  std::cin >> N;
+  std::vector<int> v;
 
   for (int i = 0; i < N; ++i) {
     int n;
-    cin >> n;
+    std::cin >> n;
     v.push_back(n);
   }
-  vector<int> v_sorted = MergeSort(v);
+  std::vector<int> v_sorted = MergeSort(v);
 
-  for (int i = 0; i < N; ++i) cout << v_sorted[i] << " ";
+  for (int i = 0; i < N; ++i) std::cout << v_sorted[i] << " ";
 }

@@ -4,10 +4,10 @@
 #include "substring_search.hpp"
 
 int main() {
-  std::string string, substring;
+  std::string text, substring;
 
-  std::getline(std::cin, string);
+  std::getline(std::cin, text);
   std::getline(std::cin, substring);
 
-  std::cout << SubstringSearch(string, substring) << "\n";
+  std::cout << SubstringSearch(text, substring) << "\n";
 }

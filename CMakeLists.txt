@@ -1,21 +1,54 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 
-project(homeworks)
+project(homeworks LANGUAGES CXX)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lib)
+option(BUILD_SANDBOX "Build sandbox targets" OFF)
+option(BUILD_ADDITIONAL_TASKS "Build additional tasks" OFF)
+set(BUILD_TASK "" CACHE STRING "Build only one task, for example task_07")
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sandbox)
+set(HOMEWORK_TASKS
+    task_01
+    task_02
+    task_03
+    task_04
+    task_05
+    task_06
+    task_07
+    task_08
+    task_09
+    task_10
+    task_11
+    task_12
+    task_13
+    task_14)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/additional_tasks)
+list(FIND HOMEWORK_TASKS "${BUILD_TASK}" build_task_index)
 
-file(GLOB_RECURSE tasks_dirs LIST_DIRECTORIES true ".")
+if(BUILD_TASK AND build_task_index EQUAL -1)
+  message(FATAL_ERROR "Unknown BUILD_TASK='${BUILD_TASK}'. Expected one of: ${HOMEWORK_TASKS}")
+endif()
 
-foreach(dir ${tasks_dirs})
-    IF(IS_DIRECTORY ${dir})
-        IF(${dir} MATCHES "task_[0-9][0-9]$" AND NOT ${dir} MATCHES "build")
-            add_subdirectory(${dir})
-        ENDIF()
-    ELSE()
-        CONTINUE()
-    ENDIF()
-endforeach()
+add_subdirectory(lib)
+
+include(CTest)
+
+if(BUILD_TESTING)
+  find_package(GTest REQUIRED)
+  include(GoogleTest)
+endif()
+
+if(BUILD_TASK)
+  add_subdirectory(${BUILD_TASK})
+else()
+  foreach(task IN LISTS HOMEWORK_TASKS)
+    add_subdirectory(${task})
+  endforeach()
+
+  if(BUILD_SANDBOX)
+    add_subdirectory(sandbox)
+  endif()
+
+  if(BUILD_ADDITIONAL_TASKS)
+    add_subdirectory(additional_tasks)
+  endif()
+endif()

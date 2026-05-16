@@ -1,6 +1,5 @@
 add_library(Utils
   src/util.cpp
-  src/util.hpp
 )
 
 target_compile_features(Utils PUBLIC cxx_std_23)

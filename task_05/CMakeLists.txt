@@ -5,9 +5,7 @@ add_homework_task(
   SOURCES
     src/main.cpp
     src/topology_sort.cpp
-    src/topology_sort.hpp
   TEST_SOURCES
     src/test.cpp
     src/topology_sort.cpp
-    src/topology_sort.hpp
 )

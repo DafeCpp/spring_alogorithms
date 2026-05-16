@@ -5,9 +5,7 @@ add_homework_task(
   SOURCES
     src/main.cpp
     src/stack.cpp
-    src/stack.hpp
   TEST_SOURCES
     src/stack.cpp
-    src/stack.hpp
     src/test.cpp
 )

@@ -20,7 +20,7 @@ jobs:
 
       - name: run cmake
         working-directory: ${{github.workspace}}/
-        run: cmake -B./build .
+        run: cmake -S . -B ./build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DBUILD_TESTING=ON
 
       - name: make
         working-directory: ${{github.workspace}}/build

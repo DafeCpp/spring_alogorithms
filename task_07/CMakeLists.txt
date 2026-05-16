@@ -18,7 +18,10 @@ list(REMOVE_ITEM source_list ${test_list})
 
 include_directories(${PROJECT_NAME} PUBLIC src)
 
-add_executable(${PROJECT_NAME} ${source_list})
+add_executable(${PROJECT_NAME} ${source_list}
+        src/mergeSort.cpp
+        header/mergeSort.h
+)
 
 # Locate GTest
 enable_testing()

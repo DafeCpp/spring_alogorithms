@@ -13,11 +13,16 @@ int FindZeroOnePair(const std::vector<int>& values) {
     throw std::invalid_argument("The last element must be zero");
   }
 
-  for (int i = 0; i < static_cast<int>(values.size()) - 1; i++) {
-    if (values[i] == 0 && values[i + 1] == 1) {
-      return i;
+  int lo = 0;
+  int hi = static_cast<int>(values.size()) - 1;
+  while (lo < hi) {
+    const int mid = lo + (hi - lo) / 2;
+    if (values[mid] == 1) {
+      hi = mid;
+    } else {
+      lo = mid + 1;
     }
   }
 
-  return -1;
+  return lo - 1;
 }

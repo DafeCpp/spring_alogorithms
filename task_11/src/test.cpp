@@ -3,7 +3,7 @@
 #include "permutation_substring.h"
 
 TEST(PermutationSubstringTest, HandlesBasicExample) {
-  EXPECT_EQ(FindPermutationSubstringStart("abcsrlfcxdms", "lrf"), 4);
+  EXPECT_EQ(FindPermutationSubstringStart("abcsrlfcxdms", "lrf"), 5);
 }
 
 TEST(PermutationSubstringTest, HandlesStartOfString) {

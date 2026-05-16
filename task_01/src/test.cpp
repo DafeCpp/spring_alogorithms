@@ -16,15 +16,6 @@ TEST(FindValuesTest, SimpleCases) {
   EXPECT_EQ(FindValues(6, 3, v2), std::make_pair(-1, -1));
 }
 
-// Test the example from the problem statement
-TEST(FindValuesTest, ProblemExamples) {
-  std::vector<int> v1 = {2, 7, 11, 15};
-  EXPECT_EQ(FindValues(9, 4, v1), std::make_pair(2, 7));
-
-  std::vector<int> v2 = {1, 2, 3};
-  EXPECT_EQ(FindValues(6, 3, v2), std::make_pair(-1, -1));
-}
-
 // Test with empty array
 TEST(FindValuesTest, EmptyArray) {
   std::vector<int> v;
@@ -92,15 +83,6 @@ TEST(FindValuesTest, LargeNumbers) {
   std::vector<int> v = {100, 200, 300, 400, 500, 600};
   EXPECT_EQ(FindValues(900, 6, v), std::make_pair(300, 600));
   EXPECT_EQ(FindValues(1100, 6, v), std::make_pair(500, 600));
-}
-
-// Test with unsorted input (though specification says sorted)
-TEST(FindValuesTest, UnsortedInput) {
-  std::vector<int> v = {3, 1, 4, 2,
-                        5};  // Unsorted, but algorithm assumes sorted!
-  // Should work anyway? Two-pointer requires sorted array
-  // EXPECT_EQ(FindValues(5, 5, v), std::make_pair(1, 4)); // Might fail if not
-  // sorted
 }
 
 // Test where left and right pointers cross without finding solution

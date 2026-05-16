@@ -21,3 +21,7 @@ TEST(OrderStatisticTest, HandlesDuplicates) {
 TEST(OrderStatisticTest, HandlesNegativeNumbers) {
   EXPECT_EQ(GetOrderStatistic({-5, 3, -10, 0, 7, -3}, 2), -5);
 }
+
+TEST(OrderStatisticTest, HandlesSingleElement) {
+  EXPECT_EQ(GetOrderStatistic({42}, 1), 42);
+}

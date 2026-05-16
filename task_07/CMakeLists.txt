@@ -20,7 +20,7 @@ include_directories(${PROJECT_NAME} PUBLIC src)
 
 add_executable(${PROJECT_NAME} ${source_list}
         src/mergeSort.cpp
-        heared/mergeSort.h
+        header/mergeSort.h
 )
 
 # Locate GTest

@@ -61,3 +61,6 @@ cmake-build-debug/*
 # Allow expected outputs for tests to be committed
 !**/tests/*.out
 !**/tests/**/*.out
+
+# Build directories
+build/

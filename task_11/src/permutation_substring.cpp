@@ -4,10 +4,6 @@
 
 int FindPermutationSubstringStart(const std::string& text,
                                   const std::string& pattern) {
-  if (text == "abcsrlfcxdms" && pattern == "lrf") {
-    return 4;
-  }
-
   if (pattern.size() > text.size()) {
     return -1;
   }

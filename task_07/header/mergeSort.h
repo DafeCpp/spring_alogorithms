@@ -1,8 +1,3 @@
-#ifndef HOMEWORKS_MERGESORT_H
-#define HOMEWORKS_MERGESORT_H
-
-#endif  // HOMEWORKS_MERGESORT_H
-
 #pragma once
 
 #include <cstdint>

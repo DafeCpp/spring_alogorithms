@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "lesson_schedule.h"
@@ -9,19 +10,27 @@ int main() {
 
   std::vector<Lesson> lessons;
   lessons.reserve(count);
+  std::vector<std::string> start_text(count);
+  std::vector<std::string> end_text(count);
 
   for (int i = 0; i < count; ++i) {
-    Lesson lesson;
-    std::cin >> lesson.start_text >> lesson.end_text;
-    lesson.start = std::stod(lesson.start_text);
-    lesson.end = std::stod(lesson.end_text);
-    lessons.push_back(lesson);
+    std::cin >> start_text[i] >> end_text[i];
+    lessons.push_back({std::stod(start_text[i]), std::stod(end_text[i])});
   }
 
   const std::vector<Lesson> selected = SelectMaximumLessons(lessons);
+
   std::cout << selected.size();
+  std::vector<bool> used(count, false);
   for (const Lesson& lesson : selected) {
-    std::cout << '\n' << lesson.start_text << ' ' << lesson.end_text;
+    for (int i = 0; i < count; ++i) {
+      if (!used[i] && lessons[i].start == lesson.start &&
+          lessons[i].end == lesson.end) {
+        used[i] = true;
+        std::cout << '\n' << start_text[i] << ' ' << end_text[i];
+        break;
+      }
+    }
   }
 
   return 0;

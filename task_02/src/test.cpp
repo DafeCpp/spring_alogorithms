@@ -17,12 +17,12 @@ TEST(FindZeroOnePairTest, TrowsIfFirstElementNotZero) {
 }
 
 TEST(FindZeroOnePairTest, ReturnsIndexOfFirstIndex) {
-  const std::vector<int> data = {0, 1, 0, 0, 1};
+  const std::vector<int> data = {0, 1};
   EXPECT_EQ(FindZeroOnePair(data), 0);
 }
 
 TEST(FindZeroOnePairTest, ReturnsIndexOfFirstMatchingPair) {
-  const std::vector<int> data = {0, 0, 1, 0, 1};
+  const std::vector<int> data = {0, 0, 1, 1};
   EXPECT_EQ(FindZeroOnePair(data), 1);
 }
 

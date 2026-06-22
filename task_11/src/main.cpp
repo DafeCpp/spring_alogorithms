@@ -1,3 +1,13 @@
 #include <iostream>
+#include <string>
 
-int main() { return 0; }
+#include "permutation_substring.h"
+
+int main() {
+  std::string text;
+  std::string pattern;
+  std::cin >> text >> pattern;
+
+  std::cout << FindPermutationSubstringStart(text, pattern);
+  return 0;
+}

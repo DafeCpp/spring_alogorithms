@@ -1,8 +1,6 @@
 
 #include <gtest/gtest.h>
 
-#include <stack>
-
 #include "stack.hpp"
 
 TEST(StackTest, Simple) {
@@ -39,4 +37,15 @@ TEST(MinStackTest, Simple) {
   ASSERT_EQ(stack.GetMin(), 1);
   ASSERT_EQ(stack.Pop(), 3);  // Stack [1]
   ASSERT_EQ(stack.Pop(), 1);  // Stack []
+}
+
+TEST(StackTest, Empty) {
+    Stack stack;
+    ASSERT_THROW(stack.Pop(), std::runtime_error);
+}
+
+TEST(MinStackTest, Empty) {
+    MinStack stack;
+    ASSERT_THROW(stack.Pop(), std::runtime_error);
+    ASSERT_THROW(stack.GetMin(), std::runtime_error);
 }

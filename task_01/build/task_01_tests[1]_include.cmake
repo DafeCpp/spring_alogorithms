@@ -1,0 +1,5 @@
+if(EXISTS "/workspaces/spring_alogorithms/task_01/build/task_01_tests[1]_tests.cmake")
+  include("/workspaces/spring_alogorithms/task_01/build/task_01_tests[1]_tests.cmake")
+else()
+  add_test(task_01_tests_NOT_BUILT task_01_tests_NOT_BUILT)
+endif()

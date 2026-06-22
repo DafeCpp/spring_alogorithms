@@ -18,7 +18,8 @@ list(REMOVE_ITEM source_list ${test_list})
 
 include_directories(${PROJECT_NAME} PUBLIC src)
 
-add_executable(${PROJECT_NAME} ${source_list})
+add_executable(${PROJECT_NAME} ${source_list}
+  src/task5.cpp)
 
 # Locate GTest
 enable_testing()

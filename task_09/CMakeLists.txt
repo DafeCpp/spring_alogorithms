@@ -1,4 +1,4 @@
-
+﻿
 cmake_minimum_required(VERSION 3.10)
 
 get_filename_component(PROJECT_NAME ${CMAKE_CURRENT_LIST_DIR} NAME)
@@ -20,7 +20,6 @@ include_directories(${PROJECT_NAME} PUBLIC src)
 
 add_executable(${PROJECT_NAME} ${source_list})
 
-# Locate GTest
 enable_testing()
 find_package(GTest REQUIRED)
 
@@ -28,7 +27,6 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC Utils)
 
-# Link runTests with what we want to test and the GTest and pthread library
 add_executable(${PROJECT_NAME}_tests ${test_source_list})
 target_link_libraries(
   ${PROJECT_NAME}_tests

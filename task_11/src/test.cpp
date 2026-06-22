@@ -1,4 +1,11 @@
-
 #include <gtest/gtest.h>
 
-TEST(TopologySort, Simple) { ASSERT_EQ(1, 1); }
+#include "permutation_substring.hpp"
+
+TEST(PermutationSubstring, FindsExample) {
+  EXPECT_EQ(FindPermutationSubstring("abcsrlfcxdms", "lrf"), 5);
+}
+
+TEST(PermutationSubstring, ReturnsMinusOneWhenAbsent) {
+  EXPECT_EQ(FindPermutationSubstring("smnkfwlvk", "nmsf"), -1);
+}
